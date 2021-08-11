@@ -53,6 +53,11 @@
 (define (makeToken type chars linenum)
   (list type chars linenum) )
 
+(define SINGLE_CHAR_TOKENS
+ '( (#\( . TOKEN_LEFT_PAREN)
+    (#\) . TOKEN_RIGHT_PAREN)
+	) )
+
 (define (tokenize fullcharlist)
   (reverse
    (let tokenizeloop ( (tokenslist '())
@@ -63,25 +68,15 @@
 	 (let ( (c (car charlist))
 		(remaining_chars (cdr charlist))
 		) ; end of let variables
-	   (cond ( (char=? #\( c)
+	   (cond ( (assv c SINGLE_CHAR_TOKENS)
 		   (tokenizeloop
-		    (cons (makeToken TOKEN_LEFT_PAREN ; type
+		    (cons (makeToken (cdr (assv c SINGLE_CHAR_TOKENS)) ; type
 				     (list c) ; chars
 				     linenum) ; makeToken
 			  tokenslist) ; tokenslist
 		    remaining_chars ; charlist
 		    linenum) ; tokenize loop
-		   ); TOKEN_LEFT_PAREN condition
-
-		 ( (char=? #\) c)
-		   (tokenizeloop
-		    (cons (makeToken TOKEN_RIGHT_PAREN ; type
-				     (list c) ; chars
-				     linenum) ; makeToken
-			  tokenslist) ; tokenslist
-		    remaining_chars ; charlist
-		    linenum) ; tokenize loop
-		   ); TOKEN_RIGHT_PAREM condition
+		   ) ; single_character condition
 		 
 		 (else (tokenizeloop
 			tokenslist remaining_chars linenum))
