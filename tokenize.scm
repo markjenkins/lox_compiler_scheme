@@ -115,7 +115,7 @@
 	   (cond ( (assv c SINGLE_CHAR_TOKENS) ; if c is a single char token
 		   (tokenizeloop
 		    (cons (makeToken (cdr (assv c SINGLE_CHAR_TOKENS)) ; type
-				     (list c) ; chars
+				     (string c) ; chars
 				     linenum) ; makeToken
 			  tokenslist) ; tokenslist
 		    remaining_chars ; charlist
@@ -133,8 +133,9 @@
 			     (if isTwoChar
 				 (cadr (assv c START_OF_TWO_CHAR_TOKENS))
 				 (cddr (assv c START_OF_TWO_CHAR_TOKENS))); type
-			     (if isTwoChar (list c (car remaining_chars))
-				 (list c)) ; chars
+			     (if isTwoChar
+				 (string c (car remaining_chars))
+				 (string c)) ; chars
 			     linenum) ; makeToken
 			    tokenslist) ; tokenslist
 		      (if isTwoChar
