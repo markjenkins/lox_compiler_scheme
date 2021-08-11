@@ -74,6 +74,33 @@
      (#\> . (TOKEN_GREATER_EQUAL . TOKEN_GREATER) )
      ))
 
+(define (isWhitespaceNotnewline c)
+  (or (eqv? #\tab c)
+      (eqv? #\linefeed c)
+      (eqv? #\space c)) )
+
+(define (isNewline c)
+  (eqv? #\newline c))
+
+(define (isWhitespace c)
+  (or (isWhitespaceNotnewline c)
+      (isNewline c)
+      ))
+
+;;; skip whitespace counting new lines, returns a pair with
+;;; the car being the remaining characters after the whitespace (or empty list)
+;;; and the cdr being the count of newlines found
+(define (skipWhitespaceCountingNewlines origchars)
+  (let skipwhitespace_loop ( (chars origchars) (count 0) )
+    (if (null? chars)
+	(cons chars count)
+	(let ( (c (car chars)) )
+	  (cond ( (isNewline c)
+		  (skipwhitespace_loop (cdr chars) (+ count 1) ) )
+		( (isWhitespaceNotnewline c)
+		  (skipwhitespace_loop (cdr chars) count) )
+		( else (cons chars count) ) ))) ))
+
 (define (tokenize fullcharlist)
   (reverse
    (let tokenizeloop ( (tokenslist '())
@@ -112,10 +139,21 @@
 			    tokenslist) ; tokenslist
 		      (if isTwoChar
 			  (cdr remaining_chars)
-			  remaining_chars) ; remaining_chars
+			  remaining_chars) ; chars
 		      linenum) ; tokenizeloop
 		     ) ; let ( (isTwoChar))
 		    ) ; potential two char condition
+
+		 ;; if c is whitespace, pass the remaining characters,
+		 ;; including character c into our whitespace skip and newline
+		 ;; count function. (c included because it might be newline)
+		 ( (isWhitespace c)
+		   (let ( (whitespaceskippair
+			   (skipWhitespaceCountingNewlines charlist) ) )
+		     (tokenizeloop
+		      tokenslist ; tokenslist
+		      (car whitespaceskippair) ; remaining chars after skip
+		      (+ linenum (cdr whitespaceskippair))))) ; linenum
 		 
 		 (else (tokenizeloop
 			tokenslist remaining_chars linenum))
