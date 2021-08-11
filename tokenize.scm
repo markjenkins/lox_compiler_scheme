@@ -56,6 +56,15 @@
 (define SINGLE_CHAR_TOKENS
  '( (#\( . TOKEN_LEFT_PAREN)
     (#\) . TOKEN_RIGHT_PAREN)
+    (#\{ . TOKEN_LEFT_BRACE)
+    (#\} . TOKEN_RIGHT_BRACE)
+    (#\; . TOKEN_SEMICOLON)
+    (#\, . TOKEN_COMMA)
+    (#\. . TOKEN_DOT)
+    (#\- . TOKEN_MINUS)
+    (#\+ . TOKEN_PLUS)
+    (#\/ . TOKEN_SLASH)
+    (#\* . TOKEN_STAR)
 	) )
 
 (define (tokenize fullcharlist)
