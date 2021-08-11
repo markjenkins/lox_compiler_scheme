@@ -62,7 +62,7 @@
   (reverse
    (let tokenizeloop ( (tokenslist '())
 		       (charlist fullcharlist)
-		       (linenum 0) )
+		       (linenum 1) )
      (if (null? charlist)
 	 tokenslist
 	 (let ( (c (car charlist))
