@@ -67,6 +67,13 @@
     (#\* . TOKEN_STAR)
 	) )
 
+(define START_OF_TWO_CHAR_TOKENS
+  '( (#\! . (TOKEN_BANG_EQUAL . TOKEN_BANG) )
+     (#\= . (TOKEN_EQUAL_EQUAL . TOKEN_EQUAL) )
+     (#\< . (TOKEN_LESS_EQUAL . TOKEN_LESS) )
+     (#\> . (TOKEN_GREATER_EQUAL . TOKEN_GREATER) )
+     ))
+
 (define (tokenize fullcharlist)
   (reverse
    (let tokenizeloop ( (tokenslist '())
@@ -77,7 +84,8 @@
 	 (let ( (c (car charlist))
 		(remaining_chars (cdr charlist))
 		) ; end of let variables
-	   (cond ( (assv c SINGLE_CHAR_TOKENS)
+
+	   (cond ( (assv c SINGLE_CHAR_TOKENS) ; if c is a single char token
 		   (tokenizeloop
 		    (cons (makeToken (cdr (assv c SINGLE_CHAR_TOKENS)) ; type
 				     (list c) ; chars
@@ -86,6 +94,28 @@
 		    remaining_chars ; charlist
 		    linenum) ; tokenize loop
 		   ) ; single_character condition
+
+		 ;; if c is potentially the start of a two char token
+		 ( (assv c START_OF_TWO_CHAR_TOKENS)
+		   (let ( (isTwoChar
+			   (and (not (null? remaining_chars))
+				(eqv? (car remaining_chars) #\= )
+				)))
+		     (tokenizeloop
+		      (cons (makeToken
+			     (if isTwoChar
+				 (cadr (assv c START_OF_TWO_CHAR_TOKENS))
+				 (cddr (assv c START_OF_TWO_CHAR_TOKENS))); type
+			     (if isTwoChar (list c (car remaining_chars))
+				 (list c)) ; chars
+			     linenum) ; makeToken
+			    tokenslist) ; tokenslist
+		      (if isTwoChar
+			  (cdr remaining_chars)
+			  remaining_chars) ; remaining_chars
+		      linenum) ; tokenizeloop
+		     ) ; let ( (isTwoChar))
+		    ) ; potential two char condition
 		 
 		 (else (tokenizeloop
 			tokenslist remaining_chars linenum))
