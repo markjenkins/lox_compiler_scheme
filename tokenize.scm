@@ -53,6 +53,8 @@
 (define (makeToken type chars linenum)
   (list type chars linenum) )
 
+;;; we don't include '/' (TOKEN_SLASH) because that might be the start of
+;;; a comment
 (define SINGLE_CHAR_TOKENS
  '( (#\( . TOKEN_LEFT_PAREN)
     (#\) . TOKEN_RIGHT_PAREN)
@@ -63,7 +65,6 @@
     (#\. . TOKEN_DOT)
     (#\- . TOKEN_MINUS)
     (#\+ . TOKEN_PLUS)
-    (#\/ . TOKEN_SLASH)
     (#\* . TOKEN_STAR)
 	) )
 
@@ -100,6 +101,12 @@
 		( (isWhitespaceNotnewline c)
 		  (skipwhitespace_loop (cdr chars) count) )
 		( else (cons chars count) ) ))) ))
+
+(define (skipToNewlineOrEOF chars)
+  (let ( (c (car chars) ) )
+    (if (or (isNewline c) (null? c) )
+	chars
+	(skipToNewlineOrEOF (cdr chars)) )))
 
 (define (tokenize fullcharlist)
   (reverse
@@ -155,6 +162,25 @@
 		      tokenslist ; tokenslist
 		      (car whitespaceskippair) ; remaining chars after skip
 		      (+ linenum (cdr whitespaceskippair))))) ; linenum
+
+		 ;; check for comment on remainder of line if next char is /
+		 ;; if this isn't the start of //, then we have
+		 ;; TOKEN_SLASH
+		 ( (eqv? #\/ c)
+		   (if (eqv? #\/ (car remaining_chars))
+		       (tokenizeloop
+			tokenslist
+			(skipToNewlineOrEOF (cdr remaining_chars))
+			linenum)
+		       ;; case of a slash followed by something else
+		       (tokenizeloop
+			(cons
+			 (makeToken 'TOKEN_SLASH ; type
+				    (string c) ; chars
+				    linenum) ; (makeToken)
+			 tokenslist) ; cons, tokenslist arg to (tokenizeloop)
+			remaining_chars
+			linenum)))
 		 
 		 (else (tokenizeloop
 			tokenslist remaining_chars linenum))
