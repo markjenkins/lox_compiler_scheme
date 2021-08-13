@@ -53,6 +53,8 @@
 (define (makeToken type chars linenum)
   (list type chars linenum) )
 
+(define tokenLineNum caddr)
+
 ;;; we don't include '/' (TOKEN_SLASH) because that might be the start of
 ;;; a comment
 (define SINGLE_CHAR_TOKENS
@@ -107,6 +109,33 @@
     (if (or (isNewline c) (null? c) )
 	chars
 	(skipToNewlineOrEOF (cdr chars)) )))
+
+(define (accumulateStringToken origchars origlinenum)
+  (let stringscan_loop ( (charbuffer '())
+			 (chars origchars)
+			 (linenum origlinenum) )
+    (if (null? chars)
+	(error "unterminated string starting on line" origlinenum
+	       "and ending on line" linenum)
+	(let ( (c (car chars)) )
+	  (cond ( (isNewline c)
+		  (stringscan_loop (cons c charbuffer)
+				   (cdr chars)
+				   (+ 1 linenum)))
+		;; terminal case on our loop, return the string token
+		;; and the remaining character buffer as a pair
+		( (eqv? #\" c)
+		  (cons
+		   (makeToken 'TOKEN_STRING ; type
+			      (list->string (reverse charbuffer)) ; chars
+			      linenum)
+		   (cdr chars) ) )
+
+		;; all other characters are pre-pended to charbuffer and
+		;; we keep looping
+		(else (stringscan_loop (cons c charbuffer)
+				       (cdr chars)
+				       linenum)) )))))
 
 (define (tokenize fullcharlist)
   (reverse
@@ -181,6 +210,15 @@
 			 tokenslist) ; cons, tokenslist arg to (tokenizeloop)
 			remaining_chars
 			linenum)))
+
+		 ( (eqv? #\" c)
+		   (let ( (stringscanpair
+			   (accumulateStringToken remaining_chars linenum)) )
+		     (tokenizeloop
+		      (cons (car stringscanpair) tokenslist) ; tokenslist
+		      (cdr stringscanpair) ; charlist
+		      (tokenLineNum (car stringscanpair)) ; linenum
+		      )))
 		 
 		 (else (tokenizeloop
 			tokenslist remaining_chars linenum))
