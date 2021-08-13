@@ -193,6 +193,7 @@
 			remaining_chars
 			linenum)))
 
+		 ;; start of a string
 		 ( (eqv? #\" c)
 		   (let ( (stringscanpair
 			   (accumulateStringToken remaining_chars linenum)) )
@@ -201,7 +202,8 @@
 		      (cdr stringscanpair) ; charlist
 		      (tokenLineNum (car stringscanpair)) ; linenum
 		      )))
-		 
+
+		 ;; skip over all other characters
 		 (else (tokenizeloop
 			tokenslist remaining_chars linenum))
 		 ) ; cond
