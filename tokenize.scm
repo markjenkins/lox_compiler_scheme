@@ -123,6 +123,32 @@
 				       (cdr chars)
 				       linenum)) )))))
 
+(define (isDigit c)
+  (and (char>=? c #\0)
+       (char<=? c #\9) ))
+
+(define (digitrun chars)
+  (span_w_pair_ret isDigit chars))
+
+(define (scan_numeric chars)
+  (let* ( (digitrunresult (digitrun chars))
+	  (digitrunlist (car digitrunresult))
+	  (afterdigitrunchars (cdr digitrunresult) ))
+    (if (pair? afterdigitrunchars)
+	;; case of having . after the digitrun and more digits after
+	;; this means something like "1. blah" will just be 1 (int) and
+	;; not 1.0 float style
+	(if (and (eqv? #\. (car afterdigitrunchars))
+		 (pair? (cdr afterdigitrunchars))
+		 (isDigit (cadr afterdigitrunchars)) )
+	    (let ( (seconddigitrunresult (digitrun (cdr afterdigitrunchars))) )
+	      (cons (append digitrunlist
+			    '(#\.)
+			    (car seconddigitrunresult) )
+		    (cdr seconddigitrunresult) ))
+	    (cons digitrunlist afterdigitrunchars) )
+	(cons digitrunlist afterdigitrunchars) ) ))
+
 (define (tokenize fullcharlist)
   (reverse
    (let tokenizeloop ( (tokenslist '())
@@ -202,6 +228,19 @@
 		      (cdr stringscanpair) ; charlist
 		      (tokenLineNum (car stringscanpair)) ; linenum
 		      )))
+
+		 ;; start of numeric
+		 ( (isDigit c)
+		   (let ( (scannumericresultpair
+			   (scan_numeric charlist)))
+		     (tokenizeloop
+		      (cons
+		       (makeToken 'TOKEN_NUMERIC
+				  (list->string (car scannumericresultpair))
+				  linenum) ; makeToken
+		       tokenslist) ; tokenslist
+		      (cdr scannumericresultpair) ; charlist
+		      linenum)))
 
 		 ;; skip over all other characters
 		 (else (tokenizeloop
