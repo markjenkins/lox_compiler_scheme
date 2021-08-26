@@ -1,0 +1,22 @@
+(define KEYWORD_TRIE
+  '( (#\a #\n #\d TOKEN_AND)
+     (#\c #\l #\a #\s #\s TOKEN_CLASS)
+     (#\e #\l #\s #\e TOKEN_ELSE)
+     (#\f
+      (#\a #\l #\s #\e TOKEN_FALSE)
+      (#\o #\r TOKEN_FOR)
+      (#\u #\n TOKEN_FUN)
+      )
+     (#\i #\f TOKEN_IF)
+     (#\n #\i #\l TOKEN_NIL)
+     (#\o #\r TOKEN_OR)
+     (#\p #\r #\i #\n #\t TOKEN_PRINT)
+     (#\r #\e #\t #\u #\r #\n TOKEN_RETURN)
+     (#\s #\u #\p #\e #\r TOKEN_SUPER)
+     (#\t
+      (#\h #\i #\s TOKEN_THIS)
+      (#\r #\u #\e TOKEN_TRUE)
+      )
+     (#\v #\a #\r TOKEN_VAR)
+     (#\w #\h #\i #\l #\e TOKEN_WHILE)
+     ))

@@ -127,8 +127,18 @@
   (and (char>=? c #\0)
        (char<=? c #\9) ))
 
+(define (isAlpha c)
+  (or (and (char>=? c #\a) (char<=? c #\z))
+      (and (char>=? c #\A) (char<=? c #\Z)) ))
+
+(define (isAlphaNum c)
+    (or (isAlpha c) (isDigit c)))
+
 (define (digitrun chars)
   (span_w_pair_ret isDigit chars))
+
+(define (scan_identifier chars)
+  (span_w_pair_ret isAlphaNum chars))
 
 (define (scan_numeric chars)
   (let* ( (digitrunresult (digitrun chars))
@@ -241,6 +251,27 @@
 		       tokenslist) ; tokenslist
 		      (cdr scannumericresultpair) ; charlist
 		      linenum)))
+
+		 ;; start of identifier or keyword
+		 ( (isAlpha c)
+		   (let* ( (scanidentifierresultpair
+			    (scan_identifier charlist) )
+			   (identifiercharlist (car scanidentifierresultpair))
+			   (trielookupresult
+			    (trie_lookup KEYWORD_TRIE identifiercharlist)))
+		     (tokenizeloop
+		      (cons (makeToken
+			     ;; if we found the tokent type in KEYWORD_TRIE
+			     ;; the token type is TOKEN_IDENTIFIER if not
+			     ;; in KEYWORD_TRIE
+			     (if trielookupresult
+				 trielookupresult
+				 'TOKEN_IDENTIFIER) ; type
+			     (list->string identifiercharlist)
+			     linenum)
+			    tokenslist) ; tokenslist arg of tokenizeloop
+		      (cdr scanidentifierresultpair) ; charlist
+		      linenum) )) ; tokenizeloop
 
 		 ;; skip over all other characters
 		 (else (tokenizeloop
