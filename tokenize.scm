@@ -53,6 +53,8 @@
 (define (makeToken type chars linenum)
   (list type chars linenum) )
 
+(define tokenType car)
+(define tokenChars cadr)
 (define tokenLineNum caddr)
 
 ;;; we don't include '/' (TOKEN_SLASH) because that might be the start of

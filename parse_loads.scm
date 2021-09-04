@@ -1,0 +1,7 @@
+(load "span_w_pair_state.scm")
+(load "srfi1.scm")
+(load "trie.scm")
+(load "keyword_trie.scm")
+(load "tokenize.scm")
+(load "alt_unfold.scm")
+(load "parse.scm")

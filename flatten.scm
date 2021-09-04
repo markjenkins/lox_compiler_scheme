@@ -1,0 +1,13 @@
+(define (flatten_nested_list_inner l accum)
+  (if (pair? l)
+      (if (pair? (car l))
+	  (let ( (flatl (flatten_nested_list_inner (car l) accum)) )
+	    (let flatlloop ( (fl (reverse flatl) ) (innerloopaccum '() ))
+	      (if (pair? fl)
+		  (flatlloop (cdr fl) (cons (car fl) innerloopaccum) )
+		  (flatten_nested_list_inner (cdr l) innerloopaccum))))
+	  (flatten_nested_list_inner (cdr l) (cons (car l) accum)))
+      accum))
+
+(define (flatten_nested_list l)
+  (reverse (flatten_nested_list_inner l '())))

@@ -1,4 +1,4 @@
-(use-modules (srfi srfi-1))
+;;; this file requires srfi1.scm to come before it
 
 (define (trie_fold_proc c state)
   (cond   ( (not state) #f ) ; propagate false if encounted
