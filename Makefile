@@ -6,8 +6,8 @@ compile_lox_to_bytecode_concat.scm: span_w_pair_state.scm srfi1.scm trie.scm key
 keyword_test_trie_concat.scm: keyword_trie.scm srfi1.scm trie.scm trie_test.scm
 	cat keyword_trie.scm srfi1.scm trie.scm trie_test.scm > keyword_test_trie_concat.scm
 
-test_tokenize_concat.scm: span_w_pair_state.scm srfi1.scm trie.scm keyword_trie.scm tokenize.scm readstdin.scm test_tokenize.scm
-	cat span_w_pair_state.scm srfi1.scm trie.scm keyword_trie.scm tokenize.scm readstdin.scm test_tokenize.scm > test_tokenize_concat.scm
+test_tokenize_concat.scm: span_w_pair_state.scm srfi1.scm trie.scm keyword_trie.scm tokenize.scm readstdin.scm prettyprint.scm test_tokenize.scm
+	cat span_w_pair_state.scm srfi1.scm trie.scm keyword_trie.scm tokenize.scm readstdin.scm prettyprint.scm test_tokenize.scm > test_tokenize_concat.scm
 
 test_alt_unfold_concat.scm: alt_unfold.scm test_alt_unfold.scm
 	cat alt_unfold.scm test_alt_unfold.scm > test_alt_unfold_concat.scm
