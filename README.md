@@ -6,7 +6,7 @@ Currently compiles simple arithmetic, integer expressions to plain text opcodes 
 
 Git tags will indicate the book chapter that I will consider myself to be functionally on par with.
 
-I'm implementing the Lox to bytecode compiler in a minimal dialect of [Scheme](https://en.wikipedia.org/wiki/Scheme_(programming_language))  . Development testing is done with [GNU Guile](https://www.gnu.org/software/guile/) but I expect to demonstrate compatibility with minimal implementations.
+I'm implementing the Lox to bytecode compiler in a minimal dialect of [Scheme](https://en.wikipedia.org/wiki/Scheme_(programming_language))  . Development testing is done with [GNU Guile](https://www.gnu.org/software/guile/) but I expect to demonstrate compatibility with minimal implementations. Attempting to document Scheme features in use in scheme_dialect.md .
 
 The bytecode interpreter is implemented with the minimal, bootstrappable C variant, [M2](https://github.com/oriansj/M2-Planet/) .
 
