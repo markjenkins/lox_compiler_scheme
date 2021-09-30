@@ -124,7 +124,7 @@ int run_vm(VM * vm){
 	   (vm->operand2->type == VAL_NUMBER) ){
 	vm->operationresult->type = VAL_NUMBER;
 	vm->operationresult->number =
-	  vm->operand1->number + vm->operand2->number;
+	  vm->operand2->number + vm->operand1->number;
 	push(vm, vm->operationresult);
       }
       else {
@@ -154,7 +154,7 @@ int run_vm(VM * vm){
 	   (vm->operand2->type == VAL_NUMBER) ){
 	vm->operationresult->type = VAL_NUMBER;
 	vm->operationresult->number =
-	  vm->operand1->number * vm->operand2->number;
+	  vm->operand2->number * vm->operand1->number;
 	push(vm, vm->operationresult);
       }
       else {
