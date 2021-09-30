@@ -1,4 +1,4 @@
-tests: test4.lox.output.txt test5.lox.output.txt test6.lox.output.txt test7.lox.output.txt test8.lox.output.txt test9.lox.output.txt test10.lox.output.txt test11.lox.output.txt test12.lox.output.txt
+tests: test4.lox.output.txt test5.lox.output.txt test6.lox.output.txt test7.lox.output.txt test8.lox.output.txt test9.lox.output.txt test10.lox.output.txt test11.lox.output.txt test12.lox.output.txt test13.lox.output.txt
 
 compile_lox_to_bytecode_concat.scm: span_w_pair_state.scm srfi1.scm trie.scm keyword_trie.scm tokenize.scm alt_unfold.scm parse.scm flatten.scm compile.scm readstdin.scm compile_lox_to_bytecode.scm
 	cat span_w_pair_state.scm srfi1.scm trie.scm keyword_trie.scm tokenize.scm alt_unfold.scm parse.scm flatten.scm compile.scm readstdin.scm compile_lox_to_bytecode.scm > compile_lox_to_bytecode_concat.scm
@@ -57,6 +57,10 @@ test12.output.txt: test12.lox test12.expected.txt compile_lox_to_bytecode_concat
 	guile compile_lox_to_bytecode_concat.scm < test12.lox > test12.output.txt
 	cmp test12.output.txt test12.expected.txt
 
+test13.output.txt: test13.lox test13.expected.txt compile_lox_to_bytecode_concat.scm
+	guile compile_lox_to_bytecode_concat.scm < test13.lox > test13.output.txt
+	cmp test13.output.txt test13.expected.txt
+
 test4.lox.output.txt: bytecode_interpreter test4.lox test4.output.txt test4.lox.expected.txt
 	./exprprint.bash test4.output.txt > test4.lox.output.txt
 	cmp test4.lox.expected.txt test4.lox.output.txt
@@ -92,6 +96,10 @@ test11.lox.output.txt: bytecode_interpreter test11.lox test11.output.txt test11.
 test12.lox.output.txt: bytecode_interpreter test12.lox test12.output.txt test12.lox.expected.txt
 	./exprprint.bash test12.output.txt > test12.lox.output.txt
 	cmp test12.lox.expected.txt test12.lox.output.txt
+
+test13.lox.output.txt: bytecode_interpreter test13.lox test13.output.txt test13.lox.expected.txt
+	./exprprint.bash test13.output.txt > test13.lox.output.txt
+	cmp test13.lox.expected.txt test13.lox.output.txt
 
 bytecode_interpreter:
 	$(MAKE) -C $@

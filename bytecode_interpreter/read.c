@@ -54,6 +54,9 @@ int read_opcode(FILE* in){
   else if ( 0==strcmp("OP_MULTIPLY", inputbuffer) ){
     return OP_MULTIPLY;
   }
+  else if ( 0==strcmp("OP_DIVIDE", inputbuffer) ){
+    return OP_DIVIDE;
+  }
   else if ( 0==strcmp("OP_NEGATE", inputbuffer) ){
     return OP_NEGATE;
   }

@@ -162,6 +162,21 @@ int run_vm(VM * vm){
 	return INTERPRET_BYTECODE_ERROR;
       }
     }
+    else if (instruction == OP_DIVIDE){
+      pop(vm, vm->operand1);
+      pop(vm, vm->operand2);
+      if ( (vm->operand1->type == VAL_NUMBER) &&
+	   (vm->operand2->type == VAL_NUMBER) ){
+	vm->operationresult->type = VAL_NUMBER;
+	vm->operationresult->number =
+	  vm->operand2->number / vm->operand1->number;
+	push(vm, vm->operationresult);
+      }
+      else {
+	fputs("operands for divide not both number\n", stderr);
+	return INTERPRET_BYTECODE_ERROR;
+      }
+    }
     /* handle unknown bytecode */
     else {
       return INTERPRET_BYTECODE_ERROR;
