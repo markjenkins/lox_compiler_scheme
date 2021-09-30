@@ -118,13 +118,13 @@ int run_vm(VM * vm){
       }
     }
     else if (instruction == OP_ADD){
-      pop(vm, vm->operand1);
       pop(vm, vm->operand2);
+      pop(vm, vm->operand1);
       if ( (vm->operand1->type == VAL_NUMBER) &&
 	   (vm->operand2->type == VAL_NUMBER) ){
 	vm->operationresult->type = VAL_NUMBER;
 	vm->operationresult->number =
-	  vm->operand2->number + vm->operand1->number;
+	  vm->operand1->number + vm->operand2->number;
 	push(vm, vm->operationresult);
       }
       else {
@@ -133,13 +133,13 @@ int run_vm(VM * vm){
       }
     }
     else if (instruction == OP_SUBTRACT){
-      pop(vm, vm->operand1);
       pop(vm, vm->operand2);
+      pop(vm, vm->operand1);
       if ( (vm->operand1->type == VAL_NUMBER) &&
 	   (vm->operand2->type == VAL_NUMBER) ){
 	vm->operationresult->type = VAL_NUMBER;
 	vm->operationresult->number =
-	  vm->operand2->number - vm->operand1->number;
+	  vm->operand1->number - vm->operand2->number;
 	push(vm, vm->operationresult);
       }
       else {
@@ -148,13 +148,13 @@ int run_vm(VM * vm){
       }
     }
     else if (instruction == OP_MULTIPLY){
-      pop(vm, vm->operand1);
       pop(vm, vm->operand2);
+      pop(vm, vm->operand1);
       if ( (vm->operand1->type == VAL_NUMBER) &&
 	   (vm->operand2->type == VAL_NUMBER) ){
 	vm->operationresult->type = VAL_NUMBER;
 	vm->operationresult->number =
-	  vm->operand2->number * vm->operand1->number;
+	  vm->operand1->number * vm->operand2->number;
 	push(vm, vm->operationresult);
       }
       else {
@@ -163,13 +163,13 @@ int run_vm(VM * vm){
       }
     }
     else if (instruction == OP_DIVIDE){
-      pop(vm, vm->operand1);
       pop(vm, vm->operand2);
+      pop(vm, vm->operand1);
       if ( (vm->operand1->type == VAL_NUMBER) &&
 	   (vm->operand2->type == VAL_NUMBER) ){
 	vm->operationresult->type = VAL_NUMBER;
 	vm->operationresult->number =
-	  vm->operand2->number / vm->operand1->number;
+	  vm->operand1->number / vm->operand2->number;
 	push(vm, vm->operationresult);
       }
       else {
