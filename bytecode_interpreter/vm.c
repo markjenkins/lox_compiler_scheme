@@ -185,7 +185,7 @@ int run_vm(VM * vm){
   }
 }
 
-void interpret(VM * vm, Chunk * chunk){
+int interpret(VM * vm, Chunk * chunk){
   vm->chunk = chunk;
   vm->ip = chunk->code;
   return run_vm(vm);
