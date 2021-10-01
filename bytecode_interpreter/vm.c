@@ -24,6 +24,15 @@
     @author Mark Jenkins <mark@markjenkins.ca>
 */
 
+#include <stdlib.h>
+#include <string.h>
+#include <stdio.h>
+#include "M2libc/bootstrappable.h"
+#include "memory.h"
+#include "value.h"
+#include "chunk.h"
+#include "vm.h"
+
 void resetVmStack(VM * vm){
   vm->stackTop = vm->stack;
 }

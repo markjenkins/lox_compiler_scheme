@@ -32,6 +32,12 @@
    memory.h
  */
 
+#include <stddef.h>
+#include <stdlib.h>
+#include "memory.h"
+#include "value.h"
+#include "chunk.h"
+
 void clearChunk(Chunk* chunk){
   chunk->count = 0;
   chunk->capacity = 0;

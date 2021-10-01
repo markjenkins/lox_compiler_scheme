@@ -19,6 +19,15 @@
     IN THE SOFTWARE.
 */
 
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include "M2libc/bootstrappable.h"
+#include "value.h"
+#include "memory.h"
+#include "chunk.h"
+#include "read.h"
+
 #define INPUT_BUFFER_SIZE 4096
 #define SPACE 32
 #define NEWLINE 10

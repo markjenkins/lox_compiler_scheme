@@ -1,5 +1,7 @@
 *_concat.scm
 *~
+*.output.gcc.txt
 *.output.txt
 bytecode_interpreter/*M1
 bytecode_interpreter/*hex2
+bytecode_interpreter/*o

@@ -24,6 +24,14 @@
     @author Mark Jenkins <mark@markjenkins.ca>
 */
 
+#include <stdlib.h>
+#include <stdio.h>
+#include "M2libc/bootstrappable.h"
+#include "value.h"
+#include "chunk.h"
+#include "read.h"
+#include "vm.h"
+
 int main(int argc, char** argv){
   Chunk * chunk = malloc(sizeof(Chunk));
   initChunk(chunk);

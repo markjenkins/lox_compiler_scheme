@@ -1,6 +1,20 @@
-all: exprprint.aarch64
+all: exprprint.aarch64 exprprint.gcc
 
-exprprint.aarch64.M1: exprprintmain.c read.c vm.c vm.h chunk.c chunk.h value.c value.h
+chunk.o: chunk.c chunk.h memory.h value.h
+exprprintmain.o: exprprintmain.c value.h chunk.h read.h vm.h
+memory.o: memory.c memory.h simplerealloc.h
+read.o: read.c read.h value.h memory.h chunk.h
+simplerealloc.o: simplerealloc.c simplerealloc.h
+value.o: value.c value.h memory.h
+vm.o: vm.c vm.h
+
+bootstrappable.o: M2libc/bootstrappable.c
+	$(CC) -c M2libc/bootstrappable.c -o bootstrappable.o
+
+exprprint.gcc: chunk.o exprprintmain.o memory.o read.o simplerealloc.o value.o vm.o bootstrappable.o
+	$(CC) -o exprprint.gcc chunk.o exprprintmain.o memory.o read.o simplerealloc.o value.o vm.o bootstrappable.o
+
+exprprint.aarch64.M1: exprprintmain.c read.c vm.c vm.h chunk.c chunk.h value.c value.h simplerealloc.c
 	M2-Planet \
 	--architecture aarch64 \
 	-f M2libc/sys/types.h \
