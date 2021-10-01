@@ -86,14 +86,15 @@ void read_constant(FILE* in, Value* value){
   }
 
   if (input_char==EOF){
-    return EOF;
+    fputs("end of input before expected constant\n", stderr);
+    return;
   }
   else if ( (input_char!=SPACE) &&
 	    (input_char!=NEWLINE) &&
 	    ( (input_char < 48) ||
 	      (input_char > 57) ) ){
     fputs("non-numeric character found in int const\n", stderr);
-    return EOF;
+    return;
   }
   inputbuffer[index] = 0;
   value->type = VAL_NUMBER;
