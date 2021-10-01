@@ -29,6 +29,13 @@
  simplerecalloc.h
 */
 
+/* call reallocate with last arg (newSize) 0 to trigger free
+   an important operation down the line for garbage collection purposes
+ */
+void free_via_reallocate(void * pointer, size_t memsize){
+  reallocate(pointer, memsize, 0);
+}
+
 void* reallocate(void* pointer, size_t oldSize, size_t newSize) {
   if (newSize == 0) {
     free(pointer);

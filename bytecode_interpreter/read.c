@@ -116,6 +116,6 @@ void read_file_into_chunk(FILE* in, Chunk * chunk){
     }
     opcode_or_eof = read_opcode(in);
   }
-  free(constValue);
-  free(inputbuffer);
+  free_via_reallocate(constValue, sizeof(Value));
+  free_via_reallocate(inputbuffer, INPUT_BUFFER_SIZE);
 }

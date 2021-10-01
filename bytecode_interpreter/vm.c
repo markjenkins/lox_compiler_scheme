@@ -43,10 +43,10 @@ void initVM(VM * vm){
   vm->exit_on_return = FALSE;
 }
 void freeVM(VM * vm){
-  free(vm->stack);
+  free_via_reallocate(vm->stack, STACK_MAX*sizeof(Value));
   /* freeing this also covers vm->operand2 and vm->operationresult
      see initVM */
-  free(vm->operand1);
+  free_via_reallocate(vm->operand1, sizeof(Value)*3);
   vm->stack = NULL;
   vm->stackTop = NULL;
 }
