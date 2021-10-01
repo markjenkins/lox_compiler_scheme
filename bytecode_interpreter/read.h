@@ -19,5 +19,6 @@
     IN THE SOFTWARE.
 */
 
-void read_chunk(FILE* in, Chunk * chunk);
-
+int read_opcode(FILE* in);
+void read_constant(FILE* in, Value* value);
+void read_file_into_chunk(FILE* in, Chunk * chunk);
