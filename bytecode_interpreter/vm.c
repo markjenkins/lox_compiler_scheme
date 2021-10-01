@@ -59,7 +59,7 @@ void push(VM * vm, Value * value){
 void pop(VM * vm, Value * targetValue){
   if (vm->stackTop == vm->stack){
     fputs("stack underflow\n", stderr);
-    return NULL;
+    return;
   }
   Value * newStackTop = decrementValuePointer(vm->stackTop);
   memcpy(targetValue, newStackTop, sizeof(Value));
