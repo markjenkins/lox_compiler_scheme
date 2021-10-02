@@ -6,7 +6,7 @@ memory.o: memory.c memory.h simplerealloc.h
 read.o: read.c read.h value.h memory.h chunk.h
 simplerealloc.o: simplerealloc.c simplerealloc.h
 value.o: value.c value.h memory.h
-vm.o: vm.c vm.h
+vm.o: vm.c vm.h memory.h value.h chunk.h
 
 bootstrappable.o: M2libc/bootstrappable.c
 	$(CC) -c M2libc/bootstrappable.c -o bootstrappable.o
