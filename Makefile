@@ -1,6 +1,7 @@
 all: bytecode_interpreter compile_lox_to_bytecode_concat.scm
 
-LOX_COMPILE_AND_EVAL_TESTS = $(shell for i in `seq 4 13`; do echo test$$i.lox.output.txt; done)
+LOX_COMPILE_AND_EVAL_TEST_NUMS = $(shell seq 4 13)
+LOX_COMPILE_AND_EVAL_TESTS = $(foreach i,$(LOX_COMPILE_AND_EVAL_TEST_NUMS),test$(i).lox.output.txt)
 
 tests: $(LOX_COMPILE_AND_EVAL_TESTS)
 
