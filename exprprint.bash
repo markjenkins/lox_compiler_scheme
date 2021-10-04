@@ -3,6 +3,7 @@
 actualarch=$(uname -i)
 arch=$actualarch
 QEMUPREFIX=''
+SCRIPT_PATH=$(dirname $0)
 
 # search through a list of architechures that are being built of our
 # bytecode interpreter with M2-Planet
@@ -25,4 +26,4 @@ if test z$QEMUPREFIX = "zqemu-x86"; then \
     QEMUPREFIX=qemu-i386
 fi
 
-$QEMUPREFIX ./bytecode_interpreter/exprprint.$arch < $1
+$QEMUPREFIX $SCRIPT_PATH/bytecode_interpreter/exprprint.$arch < $1
