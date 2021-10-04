@@ -10,7 +10,7 @@ QEMUPREFIX=''
 # be required and we stop the loop
 #
 # otherwise, plan to use qemu with the last arch in the for list
-for buildarch in aarch64; do \
+for buildarch in x86 aarch64; do \
     if test $actualarch '=' $buildarch; then \
 	QEMUPREFIX=''
 	arch=$buildarch
@@ -21,5 +21,8 @@ for buildarch in aarch64; do \
     fi
 done
 
+if test z$QEMUPREFIX = "zqemu-x86"; then \
+    QEMUPREFIX=qemu-i386
+fi
 
 $QEMUPREFIX ./bytecode_interpreter/exprprint.$arch < $1

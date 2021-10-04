@@ -1,0 +1,1 @@
+endianflag=--little-endian
