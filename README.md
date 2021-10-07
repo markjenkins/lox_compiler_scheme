@@ -28,7 +28,7 @@ Still TODO is ensuring the bytecode_interpreter C code can be compatible with [g
 
 # Tests
 
-The default make target 'tests' runs several tests and compares compiler and interpreter output against expected output.
+The make target 'tests' runs several tests and compares compiler and interpreter output against expected output.
 ```
- $ make
+ $ make tests
 ```
