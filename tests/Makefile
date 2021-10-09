@@ -11,8 +11,10 @@ keyword_test_trie_concat.scm: ../keyword_trie.scm ../srfi1.scm ../trie.scm trie_
 test_tokenize_concat.scm: ../span_w_pair_state.scm ../srfi1.scm ../trie.scm ../keyword_trie.scm ../tokenize.scm ../readstdin.scm ../prettyprint.scm test_tokenize.scm
 test_alt_unfold_concat.scm: ../alt_unfold.scm test_alt_unfold.scm
 
-# test1-3 are not part of the main test suite, there's no checking of their
-# output
+# test1-3 and test_trie are not part of the main test suite, there's
+# no checking of their output
+test_trie: keyword_test_trie_concat.scm
+	$(SCM) $<
 test1: test1.lox test_tokenize_concat.scm
 	$(SCM) test_tokenize_concat.scm < $<
 test2: test2.lox test_tokenize_concat.scm
