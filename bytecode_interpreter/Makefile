@@ -1,4 +1,4 @@
-all: exprprint.x86 exprprint.aarch64 exprprint.gcc
+bin: exprprint.x86 exprprint.aarch64 exprprint.gcc
 
 chunk.o: chunk.c chunk.h memory.h value.h
 exprprintmain.o: exprprintmain.c value.h chunk.h read.h vm.h
@@ -40,3 +40,6 @@ exprprint.x86.elf.hex2: exprprint.x86.hex2
 
 exprprint.aarch64: exprprint.aarch64.elf.hex2
 exprprint.x86: exprprint.x86.elf.hex2
+
+tests: bin
+	$(MAKE) -C $@ tests

@@ -1,7 +1,11 @@
 *_concat.scm
 *~
-*.output.gcc.txt
-*.output.txt
+tests/*.output.txt
+tests/*.output.txt.d
 bytecode_interpreter/*M1
 bytecode_interpreter/*hex2
 bytecode_interpreter/*o
+bytecode_interpreter/tests/*.lox.output.txt
+bytecode_interpreter/tests/*.lox.output.txt.d
+bytecode_interpreter/tests/*.output.gcc.txt
+bytecode_interpreter/tests/*.output.gcc.txt.d
