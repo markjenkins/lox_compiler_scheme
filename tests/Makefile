@@ -1,3 +1,5 @@
+SCM=guile
+
 LOX_COMPILE_AND_EVAL_TEST_NUMS = $(shell seq 4 13)
 LOX_COMPILE_TESTS = $(foreach i,$(LOX_COMPILE_AND_EVAL_TEST_NUMS),test$(i).output.txt)
 
@@ -12,11 +14,11 @@ test_alt_unfold_concat.scm: ../alt_unfold.scm test_alt_unfold.scm
 # test1-3 are not part of the main test suite, there's no checking of their
 # output
 test1: test1.lox test_tokenize_concat.scm
-	guile test_tokenize_concat.scm < $<
+	$(SCM) test_tokenize_concat.scm < $<
 test2: test2.lox test_tokenize_concat.scm
-	guile test_tokenize_concat.scm < $<
+	$(SCM) test_tokenize_concat.scm < $<
 test3: test_alt_unfold_concat.scm
-	guile $<
+	$(SCM) $<
 
 %.output.txt.d:
 	echo $(@:txt.d=txt) $@: $(@:output.txt.d=lox) $(@:output.txt.d=expected.txt) ../compile_lox_to_bytecode_concat.scm > $@
@@ -24,5 +26,5 @@ test3: test_alt_unfold_concat.scm
 include $(LOX_COMPILE_TESTS:.output.txt=.output.txt.d)
 
 %.output.txt:
-	guile ../compile_lox_to_bytecode_concat.scm < $< > $@
+	$(SCM) ../compile_lox_to_bytecode_concat.scm < $< > $@
 	cmp $@ $(basename $<).expected.txt
