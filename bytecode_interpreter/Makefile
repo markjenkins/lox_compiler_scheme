@@ -1,4 +1,4 @@
-archs=x86 aarch64
+archs=amd64 x86 aarch64
 EXPRPRINT_BIN=$(foreach arch,$(archs),exprprint.$(arch))
 
 bin: $(EXPRPRINT_BIN) exprprint.gcc

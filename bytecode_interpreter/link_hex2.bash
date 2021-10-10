@@ -9,6 +9,8 @@ if test Z$arch = Zaarch64; then \
     baseaddr="0x400000"
 elif test Z$arch = Zx86; then \
     baseaddr="0x08048000";
+elif test Z$arch = Zamd64; then \
+    baseaddr="0x00600000"
 else \
     echo unknown arch $arch
     exit 1
