@@ -10,3 +10,4 @@ bytecode_interpreter/tests/*.lox.output.txt
 bytecode_interpreter/tests/*.lox.output.txt.d
 bytecode_interpreter/tests/*.output.gcc.txt
 bytecode_interpreter/tests/*.output.gcc.txt.d
+bytecode_interpreter/*.d

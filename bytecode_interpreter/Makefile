@@ -3,21 +3,19 @@ EXPRPRINT_BIN=$(foreach arch,$(archs),exprprint.$(arch))
 
 bin: $(EXPRPRINT_BIN) exprprint.gcc
 
-chunk.o: chunk.c chunk.h memory.h value.h
-exprprintmain.o: exprprintmain.c value.h chunk.h read.h vm.h
-memory.o: memory.c memory.h simplerealloc.h
-read.o: read.c read.h value.h memory.h chunk.h
-simplerealloc.o: simplerealloc.c simplerealloc.h
-value.o: value.c value.h memory.h
-vm.o: vm.c vm.h memory.h value.h chunk.h
+# excludes M2lib/bootstrappable.c as we won't be changing it during dev of
+# this project
+#
+# excludes exprprintmain.c as there is no exprprintmain.h
+sourceswh = chunk.c memory.c read.c simplerealloc.c value.c vm.c
 
-bootstrappable.o: M2libc/bootstrappable.c
-	$(CC) -c M2libc/bootstrappable.c -o bootstrappable.o
+# add exprprintmain.c to the list of c sources
+sources = $(sourceswh) exprprintmain.c
 
-exprprint.gcc: chunk.o exprprintmain.o memory.o read.o simplerealloc.o value.o vm.o bootstrappable.o
-	$(CC) -o exprprint.gcc chunk.o exprprintmain.o memory.o read.o simplerealloc.o value.o vm.o bootstrappable.o
+# all .c and .h files with common.h added as there is no common.c 
+source_n_headers = $(sources) $(sourceswh:.c=.h) common.h
 
-exprprint.%.M1: exprprintmain.c read.c vm.c vm.h chunk.c chunk.h value.c value.h simplerealloc.c
+exprprint.%.M1: $(source_n_headers)
 	./compile_exprprint_w_M2Planet.bash $(subst .,,$(suffix $(basename $@)))
 
 %.hex2: %.M1
@@ -40,6 +38,26 @@ exprprint.d:
 	done
 
 include exprprint.d
+
+# use gcc -MM to discover .h depends of our $(sources) .c files
+%.d: %.c
+	@set -e; rm -f $@; $(CC) -MM $< > $@.$$$$; \
+	sed 's,\($*\)\.o[ :]*,\1.o $@ : ,g' < $@.$$$$ > $@; \
+	rm -f $@.$$$$
+
+# import .d rules created above
+include $(sources:.c=.d)
+
+# be more explicit in building M2libc/bootstrappable.c to bootstrappable.o
+# we don't want to make M2libc/bootstrappable.o as that would conflict
+# with rules in that dir, so we make our own bootstappable.o for this
+# build
+bootstrappable.o: M2libc/bootstrappable.c
+	$(CC) -c M2libc/bootstrappable.c -o bootstrappable.o
+
+# and we append bootstrapple.o to this object list
+exprprint.gcc: $(sources:.c=.o) bootstrappable.o
+	$(CC) -o $@ $^
 
 tests: bin
 	$(MAKE) -C $@ tests
