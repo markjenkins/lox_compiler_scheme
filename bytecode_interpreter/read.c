@@ -75,6 +75,15 @@ int read_opcode(FILE* in){
   else if ( 0==strcmp("OP_NIL", inputbuffer) ){
     return OP_NIL;
   }
+  else if ( 0==strcmp("OP_TRUE", inputbuffer) ){
+    return OP_TRUE;
+  }
+  else if ( 0==strcmp("OP_FALSE", inputbuffer) ){
+    return OP_FALSE;
+  }
+  else if ( 0==strcmp("OP_NOT", inputbuffer) ){
+    return OP_NOT;
+  }
 
   fputs("opcode not recognized\n", stderr);
   return EOF;

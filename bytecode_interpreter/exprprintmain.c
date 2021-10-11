@@ -58,6 +58,14 @@ int main(int argc, char** argv){
   else if (vm->operand1->type == VAL_NIL ){
     fputs("nil\n", stdout);
   }
+  else if (vm->operand1->type == VAL_BOOL){
+    if (vm->operand1->boolean){
+      fputs("true\n", stdout);
+    }
+    else {
+      fputs("false\n", stdout);
+    }
+  }
   else {
     fputs("top of stack is not a supported type\n", stderr);
     return EXIT_FAILURE;

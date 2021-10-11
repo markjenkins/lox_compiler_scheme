@@ -127,6 +127,33 @@ int run_vm(VM * vm, Chunk * chunk){
       v = soft_push(vm);
       v->type = VAL_NIL;
     }
+    else if (instruction == OP_TRUE){
+      v = soft_push(vm);
+      v->type = VAL_BOOL;
+      v->boolean = TRUE;
+    }
+    else if (instruction == OP_FALSE){
+      v = soft_push(vm);
+      v->type = VAL_BOOL;
+      v->boolean = FALSE;
+    }
+    else if (instruction == OP_NOT){
+      pop(vm, operand1);
+      if ( operand1->type == VAL_NIL ){
+	v = soft_push(vm);
+	v->type = VAL_BOOL;
+	v->boolean = TRUE;
+      }
+      else if ( operand1->type == VAL_BOOL ){
+	v = soft_push(vm);
+	v->type = VAL_BOOL;
+	v->boolean = !(operand1->boolean);
+      }
+      else {
+	fputs("operand for OP_NOT is not bool or nil\n", stderr);
+	return INTERPRET_BYTECODE_ERROR;
+      }
+    }
     else if (instruction == OP_NEGATE){
       pop(vm, operand1);
       if ( (operand1->type == VAL_NUMBER) ){
