@@ -27,16 +27,19 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "M2libc/bootstrappable.h"
+#include "memory.h"
 #include "value.h"
 #include "chunk.h"
 #include "read.h"
 #include "vm.h"
 
 int main(int argc, char** argv){
+  /* matching free at bottom of main() */
   Chunk * chunk = malloc(sizeof(Chunk));
   initChunk(chunk);
   read_file_into_chunk(stdin, chunk);
 
+  /* matching free at bottom of main() */
   VM * vm = malloc(sizeof(VM));
   initVM(vm);
   /* needed when we're just doing one expression ending with OP_RETURN */
@@ -55,7 +58,9 @@ int main(int argc, char** argv){
   fputs("\n", stdout);
 
   freeVM(vm);
+  free_via_reallocate(vm, sizeof(VM)); /* malloc at top of main() */
   freeChunk(chunk);
+  free_via_reallocate(chunk, sizeof(Chunk)); /* malloc at top of main() */
   return EXIT_SUCCESS;
 
 }
