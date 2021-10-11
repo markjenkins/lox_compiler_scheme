@@ -83,6 +83,8 @@ int run_vm(VM * vm){
   char * ip = chunk->code;
   char instruction;
   size_t index;
+  Value * operand1 = vm->operand1;
+  Value * operand2 = vm->operand2;
   Value * v;
 
   if((chunk->code==NULL) || (chunk->count==0) ){
@@ -118,11 +120,11 @@ int run_vm(VM * vm){
       
     }
     else if (instruction == OP_NEGATE){
-      pop(vm, vm->operand1);
-      if ( (vm->operand1->type == VAL_NUMBER) ){
+      pop(vm, operand1);
+      if ( (operand1->type == VAL_NUMBER) ){
 	v = soft_push(vm);
 	v->type = VAL_NUMBER;
-	v->number = -(vm->operand1->number);
+	v->number = -(operand1->number);
       }
       else {
 	fputs("operand for negate not number\n", stderr);
@@ -130,13 +132,13 @@ int run_vm(VM * vm){
       }
     }
     else if (instruction == OP_ADD){
-      pop(vm, vm->operand2);
-      pop(vm, vm->operand1);
-      if ( (vm->operand1->type == VAL_NUMBER) &&
-	   (vm->operand2->type == VAL_NUMBER) ){
+      pop(vm, operand2);
+      pop(vm, operand1);
+      if ( (operand1->type == VAL_NUMBER) &&
+	   (operand2->type == VAL_NUMBER) ){
 	v = soft_push(vm);
 	v->type = VAL_NUMBER;
-	v->number = vm->operand1->number + vm->operand2->number;
+	v->number = operand1->number + operand2->number;
       }
       else {
 	fputs("operands for add not both number\n", stderr);
@@ -144,13 +146,13 @@ int run_vm(VM * vm){
       }
     }
     else if (instruction == OP_SUBTRACT){
-      pop(vm, vm->operand2);
-      pop(vm, vm->operand1);
-      if ( (vm->operand1->type == VAL_NUMBER) &&
-	   (vm->operand2->type == VAL_NUMBER) ){
+      pop(vm, operand2);
+      pop(vm, operand1);
+      if ( (operand1->type == VAL_NUMBER) &&
+	   (operand2->type == VAL_NUMBER) ){
 	v = soft_push(vm);
 	v->type = VAL_NUMBER;
-	v->number = vm->operand1->number - vm->operand2->number;
+	v->number = operand1->number - operand2->number;
       }
       else {
 	fputs("operands for subtract not both number\n", stderr);
@@ -158,13 +160,13 @@ int run_vm(VM * vm){
       }
     }
     else if (instruction == OP_MULTIPLY){
-      pop(vm, vm->operand2);
-      pop(vm, vm->operand1);
-      if ( (vm->operand1->type == VAL_NUMBER) &&
-	   (vm->operand2->type == VAL_NUMBER) ){
+      pop(vm, operand2);
+      pop(vm, operand1);
+      if ( (operand1->type == VAL_NUMBER) &&
+	   (operand2->type == VAL_NUMBER) ){
 	v = soft_push(vm);
 	v->type = VAL_NUMBER;
-	v->number = vm->operand1->number * vm->operand2->number;
+	v->number = operand1->number * operand2->number;
       }
       else {
 	fputs("operands for multiply not both number\n", stderr);
@@ -172,13 +174,13 @@ int run_vm(VM * vm){
       }
     }
     else if (instruction == OP_DIVIDE){
-      pop(vm, vm->operand2);
-      pop(vm, vm->operand1);
-      if ( (vm->operand1->type == VAL_NUMBER) &&
-	   (vm->operand2->type == VAL_NUMBER) ){
+      pop(vm, operand2);
+      pop(vm, operand1);
+      if ( (operand1->type == VAL_NUMBER) &&
+	   (operand2->type == VAL_NUMBER) ){
 	v = soft_push(vm);
 	v->type = VAL_NUMBER;
-	v->number = vm->operand1->number / vm->operand2->number;
+	v->number = operand1->number / operand2->number;
       }
       else {
 	fputs("operands for divide not both number\n", stderr);
