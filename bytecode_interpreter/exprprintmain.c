@@ -45,13 +45,13 @@ int main(int argc, char** argv){
   if (result!=INTERPRET_OK){
     return EXIT_FAILURE;
   }
-  pop(vm, vm->operationresult);
-  if( vm->operationresult->type != VAL_NUMBER ){
+  pop(vm, vm->operand1);
+  if( vm->operand1->type != VAL_NUMBER ){
     fputs("top of stack is not a number\n", stderr);
     return EXIT_FAILURE;
   }
   /* int2str isn't really compatible with long type of number */
-  fputs( int2str(vm->operationresult->number, 10, 1), stdout);
+  fputs( int2str(vm->operand1->number, 10, 1), stdout);
   fputs("\n", stdout);
 
   freeVM(vm);

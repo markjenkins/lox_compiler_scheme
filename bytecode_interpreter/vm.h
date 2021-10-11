@@ -41,7 +41,6 @@ struct VM_ {
   Value * stackTop;
   Value * operand1;
   Value * operand2;
-  Value * operationresult;
   int exit_on_return;
 };
 typedef struct VM_ VM;
@@ -49,6 +48,7 @@ typedef struct VM_ VM;
 void resetVmStack(VM * vm);
 void initVM(VM * vm);
 void freeVM(VM * vm);
+Value * soft_push(VM * vm);
 void push(VM * vm, Value * value);
 void pop(VM * vm, Value * targetValue);
 int run_vm(VM * vm);

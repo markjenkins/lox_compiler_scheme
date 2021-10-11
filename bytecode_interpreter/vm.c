@@ -39,25 +39,28 @@ void resetVmStack(VM * vm){
 
 void initVM(VM * vm){
   vm->stack = malloc(STACK_MAX*sizeof(Value));
-  Value * operands_and_result = malloc(sizeof(Value)*3);
-  vm->operand1 = operands_and_result;
+  Value * operands = malloc(sizeof(Value)*2);
+  vm->operand1 = operands;
   /* perhaps it would make more sense to have incValuePointer(Value * v)
      to cover this common case of increment 1, would allow the
      multiplication to be skipped */
-  Value * operand2 = bumpValuePointer(operands_and_result, 1);
+  Value * operand2 = bumpValuePointer(operands, 1);
   vm->operand2 = operand2;
-  Value * result = bumpValuePointer(operand2, 1);
-  vm->operationresult = result;
   resetVmStack(vm);
   vm->exit_on_return = FALSE;
 }
 void freeVM(VM * vm){
   free_via_reallocate(vm->stack, STACK_MAX*sizeof(Value));
-  /* freeing this also covers vm->operand2 and vm->operationresult
-     see initVM */
-  free_via_reallocate(vm->operand1, sizeof(Value)*3);
+  /* freeing this also covers vm->operand2 see initVM */
+  free_via_reallocate(vm->operand1, sizeof(Value)*2);
   vm->stack = NULL;
   vm->stackTop = NULL;
+}
+
+Value * soft_push(VM * vm){
+  Value * return_value = vm->stackTop;
+  vm->stackTop = bumpValuePointer(vm->stackTop, 1);
+  return return_value;
 }
 
 void push(VM * vm, Value * value){
@@ -117,9 +120,9 @@ int run_vm(VM * vm){
     else if (instruction == OP_NEGATE){
       pop(vm, vm->operand1);
       if ( (vm->operand1->type == VAL_NUMBER) ){
-	vm->operationresult->type = VAL_NUMBER;
-	vm->operationresult->number = -(vm->operand1->number);
-	push(vm, vm->operationresult);
+	v = soft_push(vm);
+	v->type = VAL_NUMBER;
+	v->number = -(vm->operand1->number);
       }
       else {
 	fputs("operand for negate not number\n", stderr);
@@ -131,10 +134,9 @@ int run_vm(VM * vm){
       pop(vm, vm->operand1);
       if ( (vm->operand1->type == VAL_NUMBER) &&
 	   (vm->operand2->type == VAL_NUMBER) ){
-	vm->operationresult->type = VAL_NUMBER;
-	vm->operationresult->number =
-	  vm->operand1->number + vm->operand2->number;
-	push(vm, vm->operationresult);
+	v = soft_push(vm);
+	v->type = VAL_NUMBER;
+	v->number = vm->operand1->number + vm->operand2->number;
       }
       else {
 	fputs("operands for add not both number\n", stderr);
@@ -146,10 +148,9 @@ int run_vm(VM * vm){
       pop(vm, vm->operand1);
       if ( (vm->operand1->type == VAL_NUMBER) &&
 	   (vm->operand2->type == VAL_NUMBER) ){
-	vm->operationresult->type = VAL_NUMBER;
-	vm->operationresult->number =
-	  vm->operand1->number - vm->operand2->number;
-	push(vm, vm->operationresult);
+	v = soft_push(vm);
+	v->type = VAL_NUMBER;
+	v->number = vm->operand1->number - vm->operand2->number;
       }
       else {
 	fputs("operands for subtract not both number\n", stderr);
@@ -161,10 +162,9 @@ int run_vm(VM * vm){
       pop(vm, vm->operand1);
       if ( (vm->operand1->type == VAL_NUMBER) &&
 	   (vm->operand2->type == VAL_NUMBER) ){
-	vm->operationresult->type = VAL_NUMBER;
-	vm->operationresult->number =
-	  vm->operand1->number * vm->operand2->number;
-	push(vm, vm->operationresult);
+	v = soft_push(vm);
+	v->type = VAL_NUMBER;
+	v->number = vm->operand1->number * vm->operand2->number;
       }
       else {
 	fputs("operands for multiply not both number\n", stderr);
@@ -176,10 +176,9 @@ int run_vm(VM * vm){
       pop(vm, vm->operand1);
       if ( (vm->operand1->type == VAL_NUMBER) &&
 	   (vm->operand2->type == VAL_NUMBER) ){
-	vm->operationresult->type = VAL_NUMBER;
-	vm->operationresult->number =
-	  vm->operand1->number / vm->operand2->number;
-	push(vm, vm->operationresult);
+	v = soft_push(vm);
+	v->type = VAL_NUMBER;
+	v->number = vm->operand1->number / vm->operand2->number;
       }
       else {
 	fputs("operands for divide not both number\n", stderr);
