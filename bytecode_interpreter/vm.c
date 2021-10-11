@@ -76,6 +76,18 @@ void pop(VM * vm, Value * targetValue){
   vm->stackTop = newStackTop;
 }
 
+int isFalsey(Value * v){
+  if (v->type == VAL_BOOL){
+    return !(v->boolean);
+  }
+  else if (v->type == VAL_NIL ){
+    return TRUE;
+  }
+  else {
+    return FALSE;
+  }
+}
+
 int run_vm(VM * vm, Chunk * chunk){
   /* note that originally, ip and chunk were part of the vm struct
      whereas here we just have chunk pass through as an arg from interpret
@@ -139,20 +151,9 @@ int run_vm(VM * vm, Chunk * chunk){
     }
     else if (instruction == OP_NOT){
       pop(vm, operand1);
-      if ( operand1->type == VAL_NIL ){
-	v = soft_push(vm);
-	v->type = VAL_BOOL;
-	v->boolean = TRUE;
-      }
-      else if ( operand1->type == VAL_BOOL ){
-	v = soft_push(vm);
-	v->type = VAL_BOOL;
-	v->boolean = !(operand1->boolean);
-      }
-      else {
-	fputs("operand for OP_NOT is not bool or nil\n", stderr);
-	return INTERPRET_BYTECODE_ERROR;
-      }
+      soft_push(vm);
+      v->type = VAL_BOOL;
+      v->boolean = isFalsey(operand1);
     }
     else if (instruction == OP_NEGATE){
       pop(vm, operand1);
