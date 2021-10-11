@@ -111,6 +111,7 @@ void read_constant(FILE* in, Value* value){
 }
 
 void read_file_into_chunk(FILE* in, Chunk * chunk){
+  /* free for those mallocs at the bottom  of this function */
   inputbuffer = malloc(INPUT_BUFFER_SIZE);
   Value * constValue = malloc(sizeof(Value));
   size_t constantIndex;
