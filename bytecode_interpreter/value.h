@@ -59,3 +59,4 @@ void freeValueArray(ValueArray* array);
 Value * incrementValuePointer(Value * value);
 Value * decrementValuePointer(Value * value);
 Value * bumpValuePointer(Value * value, size_t count);
+int valuesEqual(Value * a, Value * b);

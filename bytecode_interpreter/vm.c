@@ -167,6 +167,13 @@ int run_vm(VM * vm, Chunk * chunk){
 	return INTERPRET_BYTECODE_ERROR;
       }
     }
+    else if (instruction == OP_EQUAL){
+      pop(vm, operand2);
+      pop(vm, operand1);
+      v = soft_push(vm);
+      v->type = VAL_BOOL;
+      v->boolean = valuesEqual(operand1, operand2);
+    }
     else if (instruction == OP_ADD){
       pop(vm, operand2);
       pop(vm, operand1);

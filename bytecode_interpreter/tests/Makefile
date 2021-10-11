@@ -1,4 +1,4 @@
-LOX_COMPILE_AND_EVAL_TEST_NUMS = $(shell seq 4 19)
+LOX_COMPILE_AND_EVAL_TEST_NUMS = $(shell seq 4 26)
 LOX_COMPILE_AND_EVAL_TESTS = $(foreach i,$(LOX_COMPILE_AND_EVAL_TEST_NUMS),test$(i).lox.output.txt)
 LOX_COMPILE_AND_EVAL_TESTS_GCC = $(foreach i,$(LOX_COMPILE_AND_EVAL_TEST_NUMS),test$(i).output.gcc.txt)
 

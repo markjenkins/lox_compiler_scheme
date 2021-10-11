@@ -30,6 +30,8 @@
  */
 
 #include <string.h>
+#include <stdio.h>
+#include "M2libc/bootstrappable.h"
 #include "memory.h"
 #include "value.h"
 
@@ -52,6 +54,25 @@ Value * decrementValuePointer(Value * value){
 Value * bumpValuePointer(Value * value, size_t count){
   void *  newValue = value + (sizeof(Value) * (count));
   return newValue;
+}
+
+int valuesEqual(Value * a, Value * b){
+  if(a->type != b->type){
+    return FALSE;
+  }
+  if( a->type == VAL_BOOL ){
+    return (a->boolean) == (b->boolean);
+  }
+  else if (a->type == VAL_NUMBER){
+    return (a->number) == (b->number);
+  }
+  else if (a->type == VAL_NIL){
+    return TRUE;
+  }
+  else{
+    fputs("valuesEqual called with unsupported types\n", stderr);
+    return FALSE;
+  }
 }
 
 void writeValueArray(ValueArray* array, Value * value) {
