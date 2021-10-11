@@ -47,6 +47,10 @@ void clearChunk(Chunk* chunk){
 
 void initChunk(Chunk* chunk) {
   clearChunk(chunk);
+  /* chunk->constants malloced here will be free when freeChunk()
+     is called. Calling freeChunk is the responsibility of the initial caller
+     of initChunk
+   */
   chunk->constants = malloc( sizeof(ValueArray) );
   initValueArray(chunk->constants);
 }
@@ -56,6 +60,8 @@ void freeChunk(Chunk* chunk) {
   free_via_reallocate(chunk->code, sizeof(char) * (chunk->capacity));
 
   freeValueArray(chunk->constants);
+  /* original malloc() in initChunk() */
+  free_via_reallocate(chunk->constants, sizeof(ValueArray) );
   clearChunk(chunk);
 }
 
