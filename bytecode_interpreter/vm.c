@@ -76,8 +76,14 @@ void pop(VM * vm, Value * targetValue){
   vm->stackTop = newStackTop;
 }
 
-int run_vm(VM * vm){
-  Chunk * chunk = vm->chunk;
+int run_vm(VM * vm, Chunk * chunk){
+  /* note that originally, ip and chunk were part of the vm struct
+     whereas here we just have chunk pass through as an arg from interpret
+     and ip as a var local to this function
+     
+     But, with these not part of the vm struct, so at some point we may need
+     to pass them on to functions called here with a need to know
+  */
   char * ip = chunk->code;
   char instruction;
   size_t index;
@@ -194,7 +200,5 @@ int run_vm(VM * vm){
 }
 
 int interpret(VM * vm, Chunk * chunk){
-  vm->chunk = chunk;
-  vm->ip = chunk->code;
-  return run_vm(vm);
+  return run_vm(vm, chunk);
 }

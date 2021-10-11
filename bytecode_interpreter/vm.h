@@ -35,8 +35,6 @@
 #define STACK_MAX 2048
 
 struct VM_ {
-  Chunk * chunk;
-  char * ip;
   Value * stack;
   Value * stackTop;
   Value * operand1;
@@ -51,5 +49,5 @@ void freeVM(VM * vm);
 Value * soft_push(VM * vm);
 void push(VM * vm, Value * value);
 void pop(VM * vm, Value * targetValue);
-int run_vm(VM * vm);
+int run_vm(VM * vm, Chunk * chunk);
 int interpret(VM * vm, Chunk * chunk);
