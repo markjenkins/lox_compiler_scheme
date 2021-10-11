@@ -72,6 +72,9 @@ int read_opcode(FILE* in){
   else if ( 0==strcmp("OP_CONSTANT", inputbuffer) ){
     return OP_CONSTANT;
   }
+  else if ( 0==strcmp("OP_NIL", inputbuffer) ){
+    return OP_NIL;
+  }
 
   fputs("opcode not recognized\n", stderr);
   return EOF;

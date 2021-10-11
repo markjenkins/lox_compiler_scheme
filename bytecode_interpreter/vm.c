@@ -123,6 +123,10 @@ int run_vm(VM * vm, Chunk * chunk){
       push(vm, v);
       
     }
+    else if (instruction == OP_NIL){
+      v = soft_push(vm);
+      v->type = VAL_NIL;
+    }
     else if (instruction == OP_NEGATE){
       pop(vm, operand1);
       if ( (operand1->type == VAL_NUMBER) ){

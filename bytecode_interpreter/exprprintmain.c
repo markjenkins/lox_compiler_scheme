@@ -49,13 +49,19 @@ int main(int argc, char** argv){
     return EXIT_FAILURE;
   }
   pop(vm, vm->operand1);
-  if( vm->operand1->type != VAL_NUMBER ){
-    fputs("top of stack is not a number\n", stderr);
+
+  if (vm->operand1->type == VAL_NUMBER){
+    /* int2str isn't really compatible with long type of number */
+    fputs( int2str(vm->operand1->number, 10, 1), stdout);
+    fputs("\n", stdout);
+  }
+  else if (vm->operand1->type == VAL_NIL ){
+    fputs("nil\n", stdout);
+  }
+  else {
+    fputs("top of stack is not a supported type\n", stderr);
     return EXIT_FAILURE;
   }
-  /* int2str isn't really compatible with long type of number */
-  fputs( int2str(vm->operand1->number, 10, 1), stdout);
-  fputs("\n", stdout);
 
   freeVM(vm);
   free_via_reallocate(vm, sizeof(VM)); /* malloc at top of main() */
