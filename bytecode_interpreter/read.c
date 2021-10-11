@@ -57,6 +57,12 @@ int read_opcode(FILE* in){
   else if ( 0==strcmp("OP_EQUAL", inputbuffer) ){
     return OP_EQUAL;
   }
+  else if ( 0==strcmp("OP_GREATER", inputbuffer) ){
+    return OP_GREATER;
+  }
+  else if ( 0==strcmp("OP_LESS", inputbuffer) ){
+    return OP_LESS;
+  }
   else if ( 0==strcmp("OP_ADD", inputbuffer) ){
     return OP_ADD;
   }

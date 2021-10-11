@@ -174,6 +174,34 @@ int run_vm(VM * vm, Chunk * chunk){
       v->type = VAL_BOOL;
       v->boolean = valuesEqual(operand1, operand2);
     }
+    else if (instruction == OP_GREATER){
+      pop(vm, operand2);
+      pop(vm, operand1);
+      if ( (operand1->type == VAL_NUMBER) &&
+	   (operand2->type == VAL_NUMBER) ){
+	v = soft_push(vm);
+	v->type = VAL_BOOL;
+	v->number = operand1->number > operand2->number;
+      }
+      else {
+	fputs("operands for greater > not both number\n", stderr);
+	return INTERPRET_BYTECODE_ERROR;
+      }
+    }
+    else if (instruction == OP_LESS){
+      pop(vm, operand2);
+      pop(vm, operand1);
+      if ( (operand1->type == VAL_NUMBER) &&
+	   (operand2->type == VAL_NUMBER) ){
+	v = soft_push(vm);
+	v->type = VAL_BOOL;
+	v->number = operand1->number < operand2->number;
+      }
+      else {
+	fputs("operands for less < not both number\n", stderr);
+	return INTERPRET_BYTECODE_ERROR;
+      }
+    }
     else if (instruction == OP_ADD){
       pop(vm, operand2);
       pop(vm, operand1);
