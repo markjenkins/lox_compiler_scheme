@@ -39,6 +39,11 @@ void initValueArray(ValueArray* array) {
   array->count = 0;
 }
 
+Value * incrementValuePointer(Value * value){
+  void *  newValue = value + sizeof(Value);
+  return newValue;
+}
+
 Value * decrementValuePointer(Value * value){
   void *  newValue = value - sizeof(Value);
   return newValue;

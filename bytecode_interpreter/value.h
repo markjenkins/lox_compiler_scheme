@@ -56,5 +56,6 @@ typedef struct ValueArray_ ValueArray;
 void initValueArray(ValueArray* array);
 void writeValueArray(ValueArray* array, Value * value);
 void freeValueArray(ValueArray* array);
+Value * incrementValuePointer(Value * value);
 Value * decrementValuePointer(Value * value);
 Value * bumpValuePointer(Value * value, size_t count);

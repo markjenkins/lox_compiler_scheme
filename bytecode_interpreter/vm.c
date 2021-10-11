@@ -41,10 +41,7 @@ void initVM(VM * vm){
   vm->stack = malloc(STACK_MAX*sizeof(Value));
   Value * operands = malloc(sizeof(Value)*2);
   vm->operand1 = operands;
-  /* perhaps it would make more sense to have incValuePointer(Value * v)
-     to cover this common case of increment 1, would allow the
-     multiplication to be skipped */
-  Value * operand2 = bumpValuePointer(operands, 1);
+  Value * operand2 = incrementValuePointer(operands);
   vm->operand2 = operand2;
   resetVmStack(vm);
   vm->exit_on_return = FALSE;
@@ -59,13 +56,13 @@ void freeVM(VM * vm){
 
 Value * soft_push(VM * vm){
   Value * return_value = vm->stackTop;
-  vm->stackTop = bumpValuePointer(vm->stackTop, 1);
+  vm->stackTop = incrementValuePointer(vm->stackTop);
   return return_value;
 }
 
 void push(VM * vm, Value * value){
   memcpy(vm->stackTop, value, sizeof(Value) );
-  vm->stackTop = bumpValuePointer(vm->stackTop, 1);
+  vm->stackTop = incrementValuePointer(vm->stackTop);
 }
 
 void pop(VM * vm, Value * targetValue){
