@@ -53,7 +53,7 @@ void initChunk(Chunk* chunk) {
 
 void freeChunk(Chunk* chunk) {
   /* FREE_ARRAY(char, chunk->code, chunk->capacity); */
-  reallocate(chunk->code, sizeof(char) * (chunk->capacity), 0);
+  free_via_reallocate(chunk->code, sizeof(char) * (chunk->capacity));
 
   freeValueArray(chunk->constants);
   clearChunk(chunk);

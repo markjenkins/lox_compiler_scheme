@@ -82,6 +82,6 @@ void freeValueArray(ValueArray* array) {
   /*was originally
     FREE_ARRAY(Value, array->values, array->capacity);*/
   size_t oldCount = array->count;
-  reallocate(array->values, sizeof(Value) * (oldCount), 0);
+  free_via_reallocate(array->values, sizeof(Value) * (oldCount) );
   initValueArray(array);
 }
