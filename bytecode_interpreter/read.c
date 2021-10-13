@@ -23,6 +23,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "M2libc/bootstrappable.h"
+#include "object.h"
 #include "value.h"
 #include "memory.h"
 #include "chunk.h"
@@ -31,6 +32,7 @@
 #define INPUT_BUFFER_SIZE 4096
 #define SPACE 32
 #define NEWLINE 10
+#define DOUBLE_QUOTE 34
 
 char * inputbuffer;
 
@@ -98,9 +100,47 @@ int read_opcode(FILE* in){
   return EOF;
 }
 
+void read_string_constant(FILE* in, Value* value){
+  int input_char = fgetc(in);
+  size_t index = 0;
+  while(input_char!=DOUBLE_QUOTE){
+    inputbuffer[index] = input_char;
+    index = index + 1;
+    input_char = fgetc(in);
+    if(input_char==EOF){
+      value->type = VAL_NIL;
+      fputs("unterminated string constant\n", stderr);
+      return;
+    }
+  }
+  
+  value->type = VAL_OBJ;
+  value->obj = copyString(inputbuffer, index);
+  input_char = fgetc(in);
+  if (input_char!=NEWLINE){
+    fputs("newline expected after string constant closing double quote. ",
+	  stderr);
+    if (input_char==EOF){
+      fputs("EOF hit instead\n", stderr);
+    }
+    else{
+      fputs("\n", stderr);
+    }
+    value->type = VAL_NIL;
+  }
+}
+
 /* written for now just for int constants */
 void read_constant(FILE* in, Value* value){
   int input_char = fgetc(in);
+
+  /* delegate to another function for string constant in "" */
+  if (input_char==DOUBLE_QUOTE){ /* '"' */
+    read_string_constant(in, value);
+    return;
+  }
+
+  /* otherwise read number constant */
   size_t index = 0;
   while( (input_char!=EOF) &&
 	 (input_char!=SPACE) &&
@@ -131,7 +171,7 @@ void read_constant(FILE* in, Value* value){
   value->number = strtoint(inputbuffer);
 }
 
-void read_file_into_chunk(FILE* in, Chunk * chunk){
+int read_file_into_chunk(FILE* in, Chunk * chunk){
   /* free for those mallocs at the bottom  of this function */
   inputbuffer = malloc(INPUT_BUFFER_SIZE);
   Value * constValue = malloc(sizeof(Value));
@@ -143,6 +183,9 @@ void read_file_into_chunk(FILE* in, Chunk * chunk){
 
     if (opcode_or_eof == OP_CONSTANT){
       read_constant(in, constValue);
+      if(constValue->type == VAL_NIL){
+	return FALSE;
+      }
       constantIndex = addConstant(chunk, constValue);
       writeChunk(chunk, constantIndex);
     }
@@ -150,4 +193,5 @@ void read_file_into_chunk(FILE* in, Chunk * chunk){
   }
   free_via_reallocate(constValue, sizeof(Value));
   free_via_reallocate(inputbuffer, INPUT_BUFFER_SIZE);
+  return TRUE;
 }

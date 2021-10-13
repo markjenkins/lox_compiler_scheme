@@ -1,0 +1,4 @@
+OP_CONSTANT "your"
+OP_CONSTANT "you're"
+OP_EQUAL
+OP_RETURN

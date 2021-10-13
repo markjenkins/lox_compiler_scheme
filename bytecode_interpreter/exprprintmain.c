@@ -28,7 +28,9 @@
 #include <stdio.h>
 #include "M2libc/bootstrappable.h"
 #include "memory.h"
+#include "object.h"
 #include "value.h"
+#include "printobject.h"
 #include "chunk.h"
 #include "read.h"
 #include "vm.h"
@@ -37,7 +39,10 @@ int main(int argc, char** argv){
   /* matching free at bottom of main() */
   Chunk * chunk = malloc(sizeof(Chunk));
   initChunk(chunk);
-  read_file_into_chunk(stdin, chunk);
+  if (!read_file_into_chunk(stdin, chunk)){
+    fputs("reading input file failed\n", stderr);
+    return EXIT_FAILURE;    
+  }
 
   /* matching free at bottom of main() */
   VM * vm = malloc(sizeof(VM));
@@ -65,6 +70,9 @@ int main(int argc, char** argv){
     else {
       fputs("false\n", stdout);
     }
+  }
+  else if (vm->operand1->type == VAL_OBJ){
+    printObject(vm->operand1);
   }
   else {
     fputs("top of stack is not a supported type\n", stderr);

@@ -19,7 +19,10 @@ M2-Planet \
     -f simplerealloc.c \
     -f memory.h \
     -f memory.c \
+    -f object.h \
     -f value.h \
+    -f printobject.h \
+    -f object.c \
     -f value.c \
     -f chunk.h \
     -f chunk.c \

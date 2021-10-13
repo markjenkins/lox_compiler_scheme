@@ -29,6 +29,7 @@
 #include <stdio.h>
 #include "M2libc/bootstrappable.h"
 #include "memory.h"
+#include "object.h"
 #include "value.h"
 #include "chunk.h"
 #include "vm.h"

@@ -35,6 +35,7 @@
 #include <stddef.h>
 #include <stdlib.h>
 #include "memory.h"
+#include "object.h"
 #include "value.h"
 #include "chunk.h"
 

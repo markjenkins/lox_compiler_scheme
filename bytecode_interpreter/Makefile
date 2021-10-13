@@ -7,13 +7,13 @@ bin: $(EXPRPRINT_BIN) exprprint.gcc
 # this project
 #
 # excludes exprprintmain.c as there is no exprprintmain.h
-sourceswh = chunk.c memory.c read.c simplerealloc.c value.c vm.c
+sourceswh = chunk.c memory.c read.c simplerealloc.c value.c vm.c object.c
 
 # add exprprintmain.c to the list of c sources
 sources = $(sourceswh) exprprintmain.c
 
 # all .c and .h files with common.h added as there is no common.c 
-source_n_headers = $(sources) $(sourceswh:.c=.h) common.h
+source_n_headers = $(sources) $(sourceswh:.c=.h) common.h printobject.h
 
 exprprint.%.M1: $(source_n_headers)
 	./compile_exprprint_w_M2Planet.bash $(subst .,,$(suffix $(basename $@)))
@@ -29,6 +29,9 @@ exprprint.%.M1: $(source_n_headers)
 %: %.elf.hex2
 	./link_hex2.bash $(subst .,,$(suffix $@)) $< $@
 	chmod +x $@
+
+objstringtest.aarch64.hex2: objstringtest.aarch64.M1
+objstringtest.aarch64.elf.hex2: objstringtest.aarch64.hex2
 
 exprprint.d:
 	rm -f exprprint.d

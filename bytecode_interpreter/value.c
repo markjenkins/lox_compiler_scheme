@@ -33,6 +33,7 @@
 #include <stdio.h>
 #include "M2libc/bootstrappable.h"
 #include "memory.h"
+#include "object.h"
 #include "value.h"
 
 void initValueArray(ValueArray* array) {
@@ -68,6 +69,17 @@ int valuesEqual(Value * a, Value * b){
   }
   else if (a->type == VAL_NIL){
     return TRUE;
+  }
+  else if (a->type == VAL_OBJ){
+    ObjString* aString = a->obj;
+    ObjString* bString = b->obj;
+    if ( (aString->type != OBJ_STRING) || (bString->type != OBJ_STRING) ){
+      fputs("valuesEqual called with incompatible one or more not string\n",
+	    stderr);
+      return FALSE;
+    }
+    return ( ((aString->length) == (bString->length)) &&
+	     (strncmp(aString->chars, bString->chars, aString->length)==0) );
   }
   else{
     fputs("valuesEqual called with unsupported types\n", stderr);

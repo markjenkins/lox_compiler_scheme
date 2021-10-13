@@ -1,0 +1,1 @@
+void printObject(Value * value);

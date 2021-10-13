@@ -1,4 +1,6 @@
-/*  Copyright (c) 2021 Mark Jenkins <mark@markjenkins.ca>
+/*  A derivitive work of https://craftinginterpreters.com
+
+    Copyright (c) 2015 Robert Nystrom
 
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the "Software"), to
@@ -17,8 +19,33 @@
     LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
     FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
     IN THE SOFTWARE.
+
+    Ported to M2-Planet C variant by
+    @author Mark Jenkins <mark@markjenkins.ca>
 */
 
-int read_opcode(FILE* in);
-void read_constant(FILE* in, Value* value);
-int read_file_into_chunk(FILE* in, Chunk * chunk);
+#define OBJ_BOUND_METHOD 0
+#define OBJ_CLASS 1
+#define OBJ_CLOSURE 2
+#define OBJ_FUNCTION 3
+#define OBJ_INSTANCE 4
+#define OBJ_NATIVE 5
+#define OBJ_STRING 6
+#define OBJ_UPVALUE 7
+
+struct Obj_ {
+  int type;
+};
+
+typedef struct Obj_ Obj;
+
+struct ObjString_ {
+  int type;
+  int length;
+  char* chars;
+};
+
+typedef struct ObjString_ ObjString;
+
+ObjString* copyString(char* chars, int length);
+

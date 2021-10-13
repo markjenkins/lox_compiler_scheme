@@ -40,6 +40,7 @@ struct Value_ {
   union {
     int boolean;
     long number;
+    Obj * obj;
   };
 };
 
