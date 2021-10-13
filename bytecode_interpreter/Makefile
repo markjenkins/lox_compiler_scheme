@@ -30,9 +30,6 @@ exprprint.%.M1: $(source_n_headers)
 	./link_hex2.bash $(subst .,,$(suffix $@)) $< $@
 	chmod +x $@
 
-objstringtest.aarch64.hex2: objstringtest.aarch64.M1
-objstringtest.aarch64.elf.hex2: objstringtest.aarch64.hex2
-
 exprprint.d:
 	rm -f exprprint.d
 	for arch in $(archs); do \
