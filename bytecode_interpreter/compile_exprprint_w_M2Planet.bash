@@ -17,18 +17,20 @@ M2-Planet \
     -f M2libc/bootstrappable.c \
     -f common.h \
     -f simplerealloc.c \
-    -f memory.h \
-    -f memory.c \
     -f object.h \
     -f value.h \
+    -f chunk.h \
+    -f vm.h \
+    -f memory.h \
+    -f memory.c \
     -f printobject.h \
     -f object.c \
     -f value.c \
-    -f chunk.h \
     -f chunk.c \
+    -f copystring.h \
     -f read.h \
     -f read.c \
-    -f vm.h \
+    -f freeobjects.h \
     -f vm.c \
     -f exprprintmain.c \
     -o exprprint.$arch.M1

@@ -34,18 +34,25 @@
 #define OBJ_UPVALUE 7
 
 struct Obj_ {
+  /* all other Obj types needs to have these fields defined at the top
+     of their struct in the same order.
+   */
   int type;
+  struct Obj_ * next;
 };
 
 typedef struct Obj_ Obj;
 
 struct ObjString_ {
+  /* standard field from Obj in the same order
+   */
   int type;
+  Obj * next;
+
+  /* ObjString specific field */
   int length;
   char* chars;
 };
 
 typedef struct ObjString_ ObjString;
-
-ObjString* copyString(char* chars, int length);
 

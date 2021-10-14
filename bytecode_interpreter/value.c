@@ -32,9 +32,11 @@
 #include <string.h>
 #include <stdio.h>
 #include "M2libc/bootstrappable.h"
-#include "memory.h"
 #include "object.h"
 #include "value.h"
+#include "chunk.h"
+#include "vm.h"
+#include "memory.h"
 
 void initValueArray(ValueArray* array) {
   array->values = NULL;

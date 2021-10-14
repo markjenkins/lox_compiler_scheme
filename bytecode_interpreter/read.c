@@ -25,9 +25,11 @@
 #include "M2libc/bootstrappable.h"
 #include "object.h"
 #include "value.h"
-#include "memory.h"
 #include "chunk.h"
+#include "vm.h"
+#include "memory.h"
 #include "read.h"
+#include "copystring.h"
 
 #define INPUT_BUFFER_SIZE 4096
 #define SPACE 32
@@ -100,7 +102,7 @@ int read_opcode(FILE* in){
   return EOF;
 }
 
-void read_string_constant(FILE* in, Value* value){
+void read_string_constant(FILE* in, Value* value, VM * vm){
   int input_char = fgetc(in);
   size_t index = 0;
   while(input_char!=DOUBLE_QUOTE){
@@ -115,7 +117,7 @@ void read_string_constant(FILE* in, Value* value){
   }
   
   value->type = VAL_OBJ;
-  value->obj = copyString(inputbuffer, index);
+  value->obj = copyString(inputbuffer, index, vm);
   input_char = fgetc(in);
   if (input_char!=NEWLINE){
     fputs("newline expected after string constant closing double quote. ",
@@ -131,12 +133,12 @@ void read_string_constant(FILE* in, Value* value){
 }
 
 /* written for now just for int constants */
-void read_constant(FILE* in, Value* value){
+void read_constant(FILE* in, Value* value, VM * vm){
   int input_char = fgetc(in);
 
   /* delegate to another function for string constant in "" */
   if (input_char==DOUBLE_QUOTE){ /* '"' */
-    read_string_constant(in, value);
+    read_string_constant(in, value, vm);
     return;
   }
 
@@ -171,7 +173,7 @@ void read_constant(FILE* in, Value* value){
   value->number = strtoint(inputbuffer);
 }
 
-int read_file_into_chunk(FILE* in, Chunk * chunk){
+int read_file_into_chunk(FILE* in, Chunk * chunk, VM * vm){
   /* free for those mallocs at the bottom  of this function */
   inputbuffer = malloc(INPUT_BUFFER_SIZE);
   Value * constValue = malloc(sizeof(Value));
@@ -182,7 +184,7 @@ int read_file_into_chunk(FILE* in, Chunk * chunk){
     writeChunk(chunk, opcode_or_eof);
 
     if (opcode_or_eof == OP_CONSTANT){
-      read_constant(in, constValue);
+      read_constant(in, constValue, vm);
       if(constValue->type == VAL_NIL){
 	return FALSE;
       }

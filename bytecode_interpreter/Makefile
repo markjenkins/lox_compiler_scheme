@@ -13,7 +13,7 @@ sourceswh = chunk.c memory.c read.c simplerealloc.c value.c vm.c object.c
 sources = $(sourceswh) exprprintmain.c
 
 # all .c and .h files with common.h added as there is no common.c 
-source_n_headers = $(sources) $(sourceswh:.c=.h) common.h printobject.h
+source_n_headers = $(sources) $(sourceswh:.c=.h) common.h printobject.h copystring.h freeobjects.h
 
 exprprint.%.M1: $(source_n_headers)
 	./compile_exprprint_w_M2Planet.bash $(subst .,,$(suffix $(basename $@)))

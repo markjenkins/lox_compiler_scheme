@@ -20,5 +20,5 @@
 */
 
 int read_opcode(FILE* in);
-void read_constant(FILE* in, Value* value);
-int read_file_into_chunk(FILE* in, Chunk * chunk);
+void read_constant(FILE* in, Value* value, VM * vm);
+int read_file_into_chunk(FILE* in, Chunk * chunk, VM * vm);

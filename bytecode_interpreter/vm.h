@@ -40,6 +40,7 @@ struct VM_ {
   Value * operand1;
   Value * operand2;
   int exit_on_return;
+  Obj * objects;
 };
 typedef struct VM_ VM;
 

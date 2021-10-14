@@ -32,21 +32,22 @@
 #include "value.h"
 #include "printobject.h"
 #include "chunk.h"
-#include "read.h"
 #include "vm.h"
+#include "read.h"
 
 int main(int argc, char** argv){
   /* matching free at bottom of main() */
+  VM * vm = malloc(sizeof(VM));
+  initVM(vm);
+
+  /* matching free at bottom of main() */
   Chunk * chunk = malloc(sizeof(Chunk));
   initChunk(chunk);
-  if (!read_file_into_chunk(stdin, chunk)){
+  if (!read_file_into_chunk(stdin, chunk, vm)){
     fputs("reading input file failed\n", stderr);
     return EXIT_FAILURE;    
   }
 
-  /* matching free at bottom of main() */
-  VM * vm = malloc(sizeof(VM));
-  initVM(vm);
   /* needed when we're just doing one expression ending with OP_RETURN */
   vm->exit_on_return = TRUE;
   int result = interpret(vm, chunk);

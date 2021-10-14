@@ -32,6 +32,10 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "simplerealloc.h"
+#include "object.h"
+#include "value.h"
+#include "chunk.h"
+#include "vm.h"
 #include "memory.h"
 
 void* reallocate(void* pointer, size_t oldSize, size_t newSize) {
@@ -53,4 +57,25 @@ void* reallocate(void* pointer, size_t oldSize, size_t newSize) {
  */
 void free_via_reallocate(void * pointer, size_t memsize){
   reallocate(pointer, memsize, 0);
+}
+
+void freeObject(Obj* object){
+  if(object->type==OBJ_STRING){
+    ObjString * string = object;
+    free_via_reallocate(string->chars, (string->length)+1);
+    free_via_reallocate(string, sizeof(ObjString));
+  }
+  else{
+    fputs("free attempted on unsupported object type\n", stderr);
+  }
+}
+
+void freeObjects(VM * vm){
+  Obj* object = vm->objects;
+  Obj* next = NULL;
+  while (object != NULL) {
+    next = object->next;
+    freeObject(object);
+    object = next;
+  }
 }

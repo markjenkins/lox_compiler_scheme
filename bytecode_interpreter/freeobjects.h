@@ -1,0 +1,1 @@
+void freeObjects(VM * vm);

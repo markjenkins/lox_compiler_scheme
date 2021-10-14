@@ -28,11 +28,11 @@
 #include <string.h>
 #include <stdio.h>
 #include "M2libc/bootstrappable.h"
-#include "memory.h"
 #include "object.h"
 #include "value.h"
 #include "chunk.h"
 #include "vm.h"
+#include "memory.h"
 
 void resetVmStack(VM * vm){
   vm->stackTop = vm->stack;
@@ -45,6 +45,7 @@ void initVM(VM * vm){
   Value * operand2 = incrementValuePointer(operands);
   vm->operand2 = operand2;
   resetVmStack(vm);
+  vm->objects = NULL;
   vm->exit_on_return = FALSE;
 }
 void freeVM(VM * vm){
@@ -54,6 +55,8 @@ void freeVM(VM * vm){
   free_via_reallocate(vm->operand1, sizeof(Value)*2);
   vm->stack = NULL;
   vm->stackTop = NULL;
+  freeObjects(vm);
+  vm->objects = NULL;
 }
 
 Value * soft_push(VM * vm){
