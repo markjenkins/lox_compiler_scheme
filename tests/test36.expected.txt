@@ -1,0 +1,4 @@
+OP_CONSTANT "hello "
+OP_CONSTANT "world!"
+OP_ADD
+OP_RETURN

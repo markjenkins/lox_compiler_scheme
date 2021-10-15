@@ -33,6 +33,7 @@
 #include "chunk.h"
 #include "vm.h"
 #include "memory.h"
+#include "copystring.h"
 
 void resetVmStack(VM * vm){
   vm->stackTop = vm->stack;
@@ -90,6 +91,42 @@ int isFalsey(Value * v){
   else {
     return FALSE;
   }
+}
+
+void concatenate(VM * vm){
+  Value* operand2 = vm->operand2;
+  Value* operand1 = vm->operand1;
+  /* popping of two operands is already done by run_vm
+     used by run_vm() to help checked the types
+   */
+  /* pop(vm, operand2);
+     pop(vm, operand1); */
+
+  /* run_vm has already checked these types but we'll program
+     defensively just in case */
+  if ( ! ( ((operand2->type)==VAL_OBJ) &&
+	   ((operand1->type)==VAL_OBJ) ) ){
+    fputs("concatenate called on non obj operands\n", stderr);
+    /* this is where a vm panic flag should be set */
+    return;
+  }
+  ObjString* b = operand2->obj;
+  ObjString* a = operand1->obj;
+  if ( ! ( ((b->type)==OBJ_STRING) &&
+	   ((a->type)==OBJ_STRING) ) ){
+    fputs("concatenate called on non-string objs\n", stderr);
+    /* this is where a vm panic flag should be set */
+    return;
+  }
+  int length = a->length + b->length;
+  /* was ALLOCATE macro */
+  char* chars = reallocate(NULL, 0, (length+1)*sizeof(char));
+  strncpy(chars, a->chars, a->length);
+  strncpy(chars + (a->length), b->chars, b->length);
+  chars[length] = '\0';
+  Value * v = soft_push(vm);
+  v->type = VAL_OBJ;
+  v->obj = takeString(chars, length, vm);
 }
 
 int run_vm(VM * vm, Chunk * chunk){
@@ -214,6 +251,10 @@ int run_vm(VM * vm, Chunk * chunk){
 	v = soft_push(vm);
 	v->type = VAL_NUMBER;
 	v->number = operand1->number + operand2->number;
+      }
+      else if ( (operand1->type == VAL_OBJ) &&
+		(operand2->type == VAL_OBJ) ){
+	concatenate(vm);
       }
       else {
 	fputs("operands for add not both number\n", stderr);

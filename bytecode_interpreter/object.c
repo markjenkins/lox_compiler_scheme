@@ -22,6 +22,10 @@ ObjString * allocateString(char * chars, int length, VM * vm){
   return string;
 }
 
+ObjString* takeString(char* chars, int length, VM * vm){
+  return allocateString(chars, length, vm);
+}
+
 ObjString* copyString(char* chars, int length, VM * vm) {
   /* was ALLOCATE macro */
   char* heapChars = reallocate(NULL, 0, sizeof(char)* (length+1));
