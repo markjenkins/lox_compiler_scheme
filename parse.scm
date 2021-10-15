@@ -72,7 +72,9 @@
 
 (define (parse_binary bin_op_token following_token remaining_tokens)
   (let* ( (bin_op_tok_type (tokenType bin_op_token))
-	  (binary_opcode (cond ( (eqv? 'TOKEN_PLUS bin_op_tok_type)
+	  (binary_opcode (cond ( (eqv? 'TOKEN_EQUAL_EQUAL bin_op_tok_type)
+				 "OP_EQUAL" )
+			    ( (eqv? 'TOKEN_PLUS bin_op_tok_type)
 			      "OP_ADD" )
 			    ( (eqv? 'TOKEN_MINUS bin_op_tok_type)
 			      "OP_SUBTRACT" )
@@ -117,6 +119,7 @@
 	(cons 'TOKEN_SLASH       (list '()            parse_binary PREC_FACTOR))
 	(cons 'TOKEN_STAR        (list '()            parse_binary PREC_FACTOR))
 	(cons 'TOKEN_BANG        (list parse_unary    '()          PREC_NONE))
+	(cons 'TOKEN_EQUAL_EQUAL (list '()          parse_binary PREC_EQUALITY))
 	(cons 'TOKEN_NUMERIC     (list  parse_number  '()          PREC_NONE))
 	(cons 'TOKEN_FALSE       (list  parse_false   '()          PREC_NONE))
 	(cons 'TOKEN_NIL         (list  parse_nil     '()          PREC_NONE))
