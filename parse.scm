@@ -102,7 +102,9 @@
     (cons (list outputstr "\n")
 	  (cons following_token remaining_tokens))))
 
+(define parse_false (make_parse_literal "OP_FALSE"))
 (define parse_nil (make_parse_literal "OP_NIL"))
+(define parse_true (make_parse_literal "OP_TRUE"))
 
 (define
   PRECEDENCE_RULES
@@ -113,7 +115,9 @@
 	(cons 'TOKEN_SLASH       (list '()            parse_binary PREC_FACTOR))
 	(cons 'TOKEN_STAR        (list '()            parse_binary PREC_FACTOR))
 	(cons 'TOKEN_NUMERIC     (list  parse_number  '()          PREC_NONE))
+	(cons 'TOKEN_FALSE       (list  parse_false   '()          PREC_NONE))
 	(cons 'TOKEN_NIL         (list  parse_nil     '()          PREC_NONE))
+	(cons 'TOKEN_TRUE        (list  parse_true    '()          PREC_NONE))
 	))
 
 (define (parse_getPrefixRule type)
