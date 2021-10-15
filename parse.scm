@@ -98,6 +98,13 @@
     (cons (append outputsofar (list binary_opcode "\n"))
 	  (cdr parseprecedence_result) ) ))
 
+(define (parse_string string_token following_token remaining_tokens)
+  ;; return value is a pair consisting of
+  ;; * first half, a list of opcodes generated here
+  ;; * second half, the remaining tokens
+  (cons (list "OP_CONSTANT" " " "\"" (tokenChars string_token) "\"" "\n")
+	(cons following_token remaining_tokens)))
+
 (define (parse_number number_token following_token remaining_tokens)
   ;; return value is a pair consisting of
   ;; * first half, a list of opcodes generated here
@@ -126,6 +133,7 @@
 	(cons 'TOKEN_EQUAL_EQUAL (list '()          parse_binary PREC_EQUALITY))
 	(cons 'TOKEN_GREATER     (list '() parse_binary PREC_COMPARISON))
 	(cons 'TOKEN_LESS        (list '() parse_binary PREC_COMPARISON))
+	(cons 'TOKEN_STRING      (list  parse_string  '()          PREC_NONE))
 	(cons 'TOKEN_NUMERIC     (list  parse_number  '()          PREC_NONE))
 	(cons 'TOKEN_FALSE       (list  parse_false   '()          PREC_NONE))
 	(cons 'TOKEN_NIL         (list  parse_nil     '()          PREC_NONE))
