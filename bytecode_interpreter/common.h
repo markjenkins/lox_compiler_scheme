@@ -24,8 +24,5 @@
     @author Mark Jenkins <mark@markjenkins.ca>
 */
 
-/* before this include stddef.h
- */
-
 /* FALSE and TRUE are not defined here because they're included in
    bootstrappable.h */

@@ -24,11 +24,15 @@
     @author Mark Jenkins <mark@markjenkins.ca>
 */
 
-/* before this include:
+/* We're not using #ifndef guards to allow for the safe inclusion of headers
+   inside headers because M2-Planet doesn't support that, all we do
+   with M2-Planet is tell the compiler a list of .h and .c files in a workable
+   order.
+
+   So instead, we list here the headers this one depends on:
    <stddef.h>
-   common.h
-   value.h
-*/
+   "value.h"
+ */
 
 #define OP_CONSTANT 0
 #define OP_NIL 1

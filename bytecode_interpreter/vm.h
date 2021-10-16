@@ -24,9 +24,16 @@
     @author Mark Jenkins <mark@markjenkins.ca>
 */
 
-/* before this include:
-   chunk.h
-*/
+/* We're not using #ifndef guards to allow for the safe inclusion of headers
+   inside headers because M2-Planet doesn't support that, all we do
+   with M2-Planet is tell the compiler a list of .h and .c files in a workable
+   order.
+
+   So instead, we list here the headers this one depends on:
+   <stddef.h>
+   "object.h"
+   "value.h"
+ */
 
 #define INTERPRET_OK 0
 #define INTERPRET_BYTECODE_ERROR 1
