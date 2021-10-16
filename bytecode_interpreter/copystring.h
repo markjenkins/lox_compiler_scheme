@@ -36,5 +36,5 @@
    "vm.h"
  */
 
-ObjString* takeString(char* chars, int length, VM * vm);
-ObjString* copyString(char* chars, int length, VM * vm);
+ObjString* takeString(char* chars, size_t length, VM * vm);
+ObjString* copyString(char* chars, size_t length, VM * vm);

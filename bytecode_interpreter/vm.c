@@ -118,7 +118,7 @@ void concatenate(VM * vm){
     /* this is where a vm panic flag should be set */
     return;
   }
-  int length = a->length + b->length;
+  size_t length = a->length + b->length;
   /* was ALLOCATE macro */
   char* chars = reallocate(NULL, 0, (length+1)*sizeof(char));
   strncpy(chars, a->chars, a->length);

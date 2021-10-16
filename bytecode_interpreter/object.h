@@ -50,7 +50,7 @@ struct ObjString_ {
   Obj * next;
 
   /* ObjString specific field */
-  int length;
+  size_t length;
   char* chars;
 };
 
