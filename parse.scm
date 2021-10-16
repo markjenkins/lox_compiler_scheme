@@ -82,6 +82,8 @@
   (let* ( (bin_op_tok_type (tokenType bin_op_token))
 	  (binary_opcodes
 	   (cond
+	    ( (eqv? 'TOKEN_BANG_EQUAL bin_op_tok_type)
+	      '("OP_EQUAL" "OP_NOT") )
 	    ( (eqv? 'TOKEN_EQUAL_EQUAL bin_op_tok_type)
 	      '("OP_EQUAL") )
 	    ( (eqv? 'TOKEN_GREATER bin_op_tok_type)
@@ -140,6 +142,7 @@
 	(cons 'TOKEN_SLASH       (list '()            parse_binary PREC_FACTOR))
 	(cons 'TOKEN_STAR        (list '()            parse_binary PREC_FACTOR))
 	(cons 'TOKEN_BANG        (list parse_unary    '()          PREC_NONE))
+	(cons 'TOKEN_BANG_EQUAL  (list '()          parse_binary PREC_EQUALITY))
 	(cons 'TOKEN_EQUAL_EQUAL (list '()          parse_binary PREC_EQUALITY))
 	(cons 'TOKEN_GREATER     (list '() parse_binary PREC_COMPARISON))
 	(cons 'TOKEN_LESS        (list '() parse_binary PREC_COMPARISON))
