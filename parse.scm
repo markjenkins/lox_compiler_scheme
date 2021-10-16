@@ -70,24 +70,32 @@
 		   "\n"))
      (cdr parseprecresult) ) ))
 
+(define (add_newline_after_each_helper sofar iter)
+  (if (null? iter) sofar
+      (add_newline_after_each_helper (cons "\n" (cons (car iter) sofar))
+	    (cdr iter) )))
+
+(define (add_newline_after_each lines)
+  (reverse (add_newline_after_each_helper '() lines)))
+
 (define (parse_binary bin_op_token following_token remaining_tokens)
   (let* ( (bin_op_tok_type (tokenType bin_op_token))
-	  (binary_opcode
+	  (binary_opcodes
 	   (cond
 	    ( (eqv? 'TOKEN_EQUAL_EQUAL bin_op_tok_type)
-	      "OP_EQUAL" )
+	      '("OP_EQUAL") )
 	    ( (eqv? 'TOKEN_GREATER bin_op_tok_type)
-	      "OP_GREATER" )
+	      '("OP_GREATER") )
 	    ( (eqv? 'TOKEN_LESS bin_op_tok_type)
-	      "OP_LESS" )
+	      '("OP_LESS") )
 	    ( (eqv? 'TOKEN_PLUS bin_op_tok_type)
-	      "OP_ADD" )
+	      '("OP_ADD") )
 	    ( (eqv? 'TOKEN_MINUS bin_op_tok_type)
-	      "OP_SUBTRACT" )
+	      '("OP_SUBTRACT") )
 	    ( (eqv? 'TOKEN_STAR bin_op_tok_type)
-	      "OP_MULTIPLY" )
+	      '("OP_MULTIPLY") )
 	    ( (eqv? 'TOKEN_SLASH bin_op_tok_type)
-	      "OP_DIVIDE" )
+	      '("OP_DIVIDE") )
 	    (else (error "unsupported bin op"))))
 	  (parseprecedence_result
 	   (parse_precedence
@@ -97,7 +105,7 @@
 	    remaining_tokens)) ; remaining_tokens
 	  (outputsofar (car parseprecedence_result))
 	  )
-    (cons (append outputsofar (list binary_opcode "\n"))
+    (cons (append outputsofar (add_newline_after_each binary_opcodes))
 	  (cdr parseprecedence_result) ) ))
 
 (define (parse_string string_token following_token remaining_tokens)
