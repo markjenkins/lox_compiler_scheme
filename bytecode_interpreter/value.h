@@ -39,7 +39,6 @@
 #define VAL_NIL 1
 #define VAL_NUMBER 2
 #define VAL_OBJ 3
-#define VAL_SINTEGER 4
 
 struct Value_ {
   int type;
