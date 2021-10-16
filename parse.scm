@@ -72,21 +72,23 @@
 
 (define (parse_binary bin_op_token following_token remaining_tokens)
   (let* ( (bin_op_tok_type (tokenType bin_op_token))
-	  (binary_opcode (cond ( (eqv? 'TOKEN_EQUAL_EQUAL bin_op_tok_type)
-				 "OP_EQUAL" )
-			       ( (eqv? 'TOKEN_GREATER bin_op_tok_type)
-				 "OP_GREATER" )
-			       ( (eqv? 'TOKEN_LESS bin_op_tok_type)
-				 "OP_LESS" )
-			    ( (eqv? 'TOKEN_PLUS bin_op_tok_type)
-			      "OP_ADD" )
-			    ( (eqv? 'TOKEN_MINUS bin_op_tok_type)
-			      "OP_SUBTRACT" )
-			    ( (eqv? 'TOKEN_STAR bin_op_tok_type)
-			      "OP_MULTIPLY" )
-			    ( (eqv? 'TOKEN_SLASH bin_op_tok_type)
-			      "OP_DIVIDE" )
-			    (else (error "unsupported bin op"))))
+	  (binary_opcode
+	   (cond
+	    ( (eqv? 'TOKEN_EQUAL_EQUAL bin_op_tok_type)
+	      "OP_EQUAL" )
+	    ( (eqv? 'TOKEN_GREATER bin_op_tok_type)
+	      "OP_GREATER" )
+	    ( (eqv? 'TOKEN_LESS bin_op_tok_type)
+	      "OP_LESS" )
+	    ( (eqv? 'TOKEN_PLUS bin_op_tok_type)
+	      "OP_ADD" )
+	    ( (eqv? 'TOKEN_MINUS bin_op_tok_type)
+	      "OP_SUBTRACT" )
+	    ( (eqv? 'TOKEN_STAR bin_op_tok_type)
+	      "OP_MULTIPLY" )
+	    ( (eqv? 'TOKEN_SLASH bin_op_tok_type)
+	      "OP_DIVIDE" )
+	    (else (error "unsupported bin op"))))
 	  (parseprecedence_result
 	   (parse_precedence
 	    (+ 1
