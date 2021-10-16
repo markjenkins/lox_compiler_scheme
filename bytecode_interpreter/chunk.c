@@ -24,14 +24,6 @@
     @author Mark Jenkins <mark@markjenkins.ca>
 */
 
-/* before this include
-   <stddef.h>
-   <stdlib.h>
-   chunk.h
-   value.h
-   memory.h
- */
-
 #include <stddef.h>
 #include <stdlib.h>
 #include "object.h"

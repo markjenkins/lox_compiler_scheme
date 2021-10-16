@@ -24,11 +24,6 @@
     @author Mark Jenkins <mark@markjenkins.ca>
 */
 
-/*
- <stdlib.h>
- simplerecalloc.h
-*/
-
 #include <stdlib.h>
 #include <stdio.h>
 #include "simplerealloc.h"

@@ -19,12 +19,6 @@
     IN THE SOFTWARE.
 */
 
-/* include
-   <stddef.h>
-   <stdlib.h>
-   <string.h>
- */
-
 #include <stddef.h>
 #include <stdlib.h>
 #include <string.h>

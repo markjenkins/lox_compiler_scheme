@@ -24,11 +24,6 @@
     @author Mark Jenkins <mark@markjenkins.ca>
 */
 
-/* depends on
-     memory.h
-     value.h
- */
-
 #include <string.h>
 #include <stdio.h>
 #include "M2libc/bootstrappable.h"
