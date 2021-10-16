@@ -22,6 +22,7 @@
 #include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdio.h>
 #include "simplerealloc.h"
 
 void* simple_realloc(void * old, size_t oldSize, size_t newSize){
