@@ -1,6 +1,6 @@
 #!/bin/bash
 
-actualarch=$(uname -i)
+actualarch=$(uname -m)
 QEMUPREFIX=''
 SCRIPT_PATH=$(dirname $0)
 
