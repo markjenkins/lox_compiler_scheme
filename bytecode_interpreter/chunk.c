@@ -45,7 +45,7 @@ void initChunk(Chunk* chunk) {
      is called. Calling freeChunk is the responsibility of the initial caller
      of initChunk
    */
-  chunk->constants = malloc( sizeof(ValueArray) );
+  chunk->constants = malloc_via_reallocate( sizeof(ValueArray) );
   initValueArray(chunk->constants);
 }
 

@@ -37,11 +37,11 @@
 
 int main(int argc, char** argv){
   /* matching free at bottom of main() */
-  VM * vm = malloc(sizeof(VM));
+  VM * vm = malloc_via_reallocate(sizeof(VM));
   initVM(vm);
 
   /* matching free at bottom of main() */
-  Chunk * chunk = malloc(sizeof(Chunk));
+  Chunk * chunk = malloc_via_reallocate(sizeof(Chunk));
   initChunk(chunk);
   if (!read_file_into_chunk(stdin, chunk, vm)){
     fputs("reading input file failed\n", stderr);

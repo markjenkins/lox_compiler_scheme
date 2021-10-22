@@ -40,8 +40,8 @@ void resetVmStack(VM * vm){
 }
 
 void initVM(VM * vm){
-  vm->stack = malloc(STACK_MAX*sizeof(Value)); /* this is freed in freeVM */
-  Value * operands = malloc(sizeof(Value)*2); /* this is freed in freeVM */
+  vm->stack = malloc_via_reallocate(STACK_MAX*sizeof(Value)); /* this is freed in freeVM */
+  Value * operands = malloc_via_reallocate(sizeof(Value)*2); /* this is freed in freeVM */
   vm->operand1 = operands;
   Value * operand2 = incrementValuePointer(operands);
   vm->operand2 = operand2;

@@ -175,8 +175,8 @@ void read_constant(FILE* in, Value* value, VM * vm){
 
 int read_file_into_chunk(FILE* in, Chunk * chunk, VM * vm){
   /* free for those mallocs at the bottom  of this function */
-  inputbuffer = malloc(INPUT_BUFFER_SIZE);
-  Value * constValue = malloc(sizeof(Value));
+  inputbuffer = malloc_via_reallocate(INPUT_BUFFER_SIZE);
+  Value * constValue = malloc_via_reallocate(sizeof(Value));
   size_t constantIndex;
   int opcode_or_eof = read_opcode(in);
   while (opcode_or_eof != EOF){
