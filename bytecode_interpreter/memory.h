@@ -33,6 +33,7 @@
    <stddef.h>
  */
 
+void* malloc_via_reallocate(size_t memsize);
 void free_via_reallocate(void * pointer, size_t memsize);
 void* reallocate(void* pointer, size_t oldSize, size_t newSize);
 

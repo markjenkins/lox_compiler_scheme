@@ -34,7 +34,7 @@
 #include "vm.h"
 
 Obj* allocateObject(size_t size, int type, VM * vm){
-  Obj* object = reallocate(NULL, 0, size);
+  Obj* object = malloc_via_reallocate(size);
   object->type = type;
   object->next = vm->objects;
   vm->objects = object;
@@ -54,7 +54,7 @@ ObjString* takeString(char* chars, size_t length, VM * vm){
 
 ObjString* copyString(char* chars, size_t length, VM * vm) {
   /* was ALLOCATE macro */
-  char* heapChars = reallocate(NULL, 0, sizeof(char)* (length+1));
+  char* heapChars = malloc_via_reallocate(sizeof(char)* (length+1));
   memcpy(heapChars, chars, length);
   heapChars[length] = '\0';
   return allocateString(heapChars, length, vm);

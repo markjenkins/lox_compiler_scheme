@@ -47,6 +47,10 @@ void* reallocate(void* pointer, size_t oldSize, size_t newSize) {
   return result;
 }
 
+void* malloc_via_reallocate(size_t memsize){
+  return reallocate(NULL, 0, memsize);
+}
+
 /* call reallocate with last arg (newSize) 0 to trigger free
    an important operation down the line for garbage collection purposes
  */

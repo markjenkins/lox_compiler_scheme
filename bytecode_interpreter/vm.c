@@ -120,7 +120,7 @@ void concatenate(VM * vm){
   }
   size_t length = a->length + b->length;
   /* was ALLOCATE macro */
-  char* chars = reallocate(NULL, 0, (length+1)*sizeof(char));
+  char* chars = malloc_via_reallocate((length+1)*sizeof(char));
   strncpy(chars, a->chars, a->length);
   strncpy(chars + (a->length), b->chars, b->length);
   chars[length] = '\0';
