@@ -2,7 +2,17 @@ Work in progress work-through of part III (A Bytecode Virtual Machine) of the bo
 
 As a derivative work of Nystrom's [code](https://github.com/munificent/craftinginterpreters), the license here matches that used by his code, see LICENSE.
 
-Currently compiles simple arithmetic, integer expressions to plain text opcodes (assembler) and a bytecode interpreter works through those and prints the expression value.
+Currently compiles these features to plain text opcodes (assembler):
+ * integers
+ * arithmetic operators
+ * negation
+ * parentheses
+ * strings
+ * nil
+ * true, false
+ * equality, inequality, comparison operators
+
+A bytecode interpreter works through those and prints the expression value.
 
 Git tags will indicate the book chapter that I will consider myself to be functionally on par with.
 
