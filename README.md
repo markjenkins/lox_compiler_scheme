@@ -18,9 +18,29 @@ Furthermore, this should provide a really good test case for compatible Scheme i
 
 # Dependencies for bytecode_interpreter
 
-The expectation is that you'll build the bytecode_interpreter on GNU/Linux with [mescc-tools](https://github.com/oriansj/mescc-tools) and [M2-Planet](https://github.com/oriansj/M2-Planet) installed . For each of these, download the most recent release, build with 'make' and update PATH to include thier respective bin/ directories.
+The expectation is that you'll build the bytecode_interpreter on GNU/Linux with [mescc-tools](https://github.com/oriansj/mescc-tools) and [M2-Planet](https://github.com/oriansj/M2-Planet) installed . For each of these, either
+ * download the most recent release, build with 'make' and update PATH to include thier respective bin/ directories
+or
+ * clone the M2-Planet and mescc-tools git submodules in bytecode_interpreter
+ ```
+ $ cd bytecode_interpreter
+ git submodule update --init M2Planet
+ git submodule update --init mescc-tools
+```
+run make in each of them, and from this top level directory source devpath.sh into your bash shell.
+```
+$ cd ../; . devpath.sh
+```
 
-You'll also need the source files of a recent release of [M2Libc](https://github.com/oriansj/M2libc) which you should symlink into bytecode_interpreter/M2libc or unpack to that location.
+You'll also need the source files of a recent release of [M2Libc](https://github.com/oriansj/M2libc) which you should symlink into bytecode_interpreter/M2libc, unpack to that location, or use the git submodule
+```
+$ cd bytecode_interpreter; git submodule update --init M2libc
+```
+
+All sub-modules can be cloned at once with
+```
+$ git submodule update --init --recursive
+```
 
 These bootstrapping tools have support for several architechures. Currently, bytecode_interpreter/Makefile produces GNU/Linux binaries for 64bit ARM (aarch64), x86 and x86_64 (amd64). The exprprint.bash wraper shell script includes some detection logic that uses a best match and will otherwise use use [qemu-aarch64](https://www.qemu.org/) if you're on another architechure.
 

@@ -1,0 +1,9 @@
+[submodule "bytecode_interpreter/M2-Planet"]
+	path = bytecode_interpreter/M2-Planet
+	url = https://github.com/oriansj/M2-Planet.git
+[submodule "bytecode_interpreter/mescc-tools"]
+	path = bytecode_interpreter/mescc-tools
+	url = https://github.com/oriansj/mescc-tools.git
+[submodule "bytecode_interpreter/M2libc"]
+	path = bytecode_interpreter/M2libc
+	url = https://github.com/oriansj/M2libc.git
