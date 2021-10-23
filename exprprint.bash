@@ -5,8 +5,18 @@ QEMUPREFIX=''
 SCRIPT_PATH=$(dirname $0)
 
 m2planetarch=$actualarch
+
+# replace x86_64 with amd64 and i386, i486, i586, i686, and i686-pae with x86
+# this is more or less the substition that get_machine from mescc-tools
+# performs... perhaps I should just use get_machine here instead, but
+# I wanted to reduce that as a runtime requirement..
+# (mescc-tools needed for build time)
+# though in some cases the use of grep here becomes an
+# excessive runtime requirement
 if test $actualarch '=' 'x86_64'; then \
     m2planetarch='amd64'
+elif echo $m2planetarch | grep '^i[3456]86\(-pae\)*$' > /dev/null; then
+    m2planetarch='x86'
 fi
 actualm2planetarch=$m2planetarch
 
