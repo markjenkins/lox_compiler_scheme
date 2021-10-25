@@ -1,9 +1,12 @@
 SCM=guile
 
-LOX_COMPILE_AND_EVAL_TEST_NUMS = $(shell seq 4 39)
-LOX_COMPILE_TESTS = $(foreach i,$(LOX_COMPILE_AND_EVAL_TEST_NUMS),test$(i).output.txt)
+LOX_COMPILE_AND_EXPR_EVAL_TEST_NUMS = $(shell seq 4 39)
+LOX_EXPR_COMPILE_TESTS = $(foreach i,$(LOX_COMPILE_AND_EXPR_EVAL_TEST_NUMS),test$(i).output.txt)
 
-tests: $(LOX_COMPILE_TESTS)
+LOX_COMPILE_AND_DECL_EVAL_TEST_NUMS = $(shell seq 40 42)
+LOX_DECL_COMPILE_TESTS = $(foreach i,$(LOX_COMPILE_AND_DECL_EVAL_TEST_NUMS),test$(i).decl_output.txt)
+
+tests: $(LOX_EXPR_COMPILE_TESTS) $(LOX_DECL_COMPILE_TESTS)
 
 include ../scm_concat_rule.mk
 
@@ -25,8 +28,16 @@ test3: test_alt_unfold_concat.scm
 %.output.txt.d:
 	echo $(@:txt.d=txt) $@: $(@:output.txt.d=lox) $(@:output.txt.d=expected.txt) ../compile_lox_expr_to_bytecode_concat.scm > $@
 
-include $(LOX_COMPILE_TESTS:.output.txt=.output.txt.d)
+%.decl_output.txt.d:
+	echo $(@:txt.d=txt) $@: $(@:decl_output.txt.d=lox) $(@:decl_output.txt.d=expected.txt) ../compile_lox_to_bytecode_concat.scm > $@
+
+include $(LOX_EXPR_COMPILE_TESTS:.output.txt=.output.txt.d)
+include $(LOX_DECL_COMPILE_TESTS:.decl_output.txt=.decl_output.txt.d)
 
 %.output.txt:
 	$(SCM) ../compile_lox_expr_to_bytecode_concat.scm < $< > $@
+	cmp $@ $(basename $<).expected.txt
+
+%.decl_output.txt:
+	$(SCM) ../compile_lox_to_bytecode_concat.scm < $< > $@
 	cmp $@ $(basename $<).expected.txt

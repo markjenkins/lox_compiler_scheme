@@ -2,6 +2,8 @@
 *~
 tests/*.output.txt
 tests/*.output.txt.d
+tests/*.decl_output.txt
+tests/*.decl_output.txt.d
 bytecode_interpreter/*.M1
 bytecode_interpreter/*.hex2
 bytecode_interpreter/*.o

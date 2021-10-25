@@ -29,4 +29,6 @@
 		  (alt_unfold_right_pairtest_p parse_expression tokens)))))
 
 (define (parse_and_compile_to_opcodes tokens)
-  (parse_and_compile_expression_to_opcodes tokens))
+  (append
+   (flatten_nested_list (alt_unfold_pairtest_p parse_declaration tokens))
+   (list "OP_RETURN" "\n")))

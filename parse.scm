@@ -143,6 +143,7 @@
 	(cons 'TOKEN_RIGHT_PAREN (list '()            '()          PREC_NONE))
 	(cons 'TOKEN_MINUS       (list parse_unary    parse_binary PREC_TERM))
 	(cons 'TOKEN_PLUS        (list '()            parse_binary PREC_TERM))
+	(cons 'TOKEN_SEMICOLON   (list '()            '()          PREC_NONE))
 	(cons 'TOKEN_SLASH       (list '()            parse_binary PREC_FACTOR))
 	(cons 'TOKEN_STAR        (list '()            parse_binary PREC_FACTOR))
 	(cons 'TOKEN_BANG        (list parse_unary    '()          PREC_NONE))
@@ -232,3 +233,25 @@
 
 (define (parse_expression token remaining_tokens)
   (parse_precedence PREC_ASSIGNMENT token remaining_tokens))
+
+(define (parse_print_statement remaining_tokens)
+  (if (not (pair? remaining_tokens))
+      (error "token expected after print keyword")
+      (let* ( (parseexprresult (parse_expression (car remaining_tokens)
+						 (cdr remaining_tokens)))
+	      (parseexproutput (car parseexprresult))
+	      (parseexprafttokens (cdr parseexprresult)) )
+	(if (and (pair? parseexprafttokens)
+		 (tokenMatch (car parseexprafttokens) 'TOKEN_SEMICOLON))
+	    (cons
+	     (append parseexproutput (list "OP_PRINT" "\n"))
+	     (cdr parseexprafttokens) )
+	    (error "semi-colon expected after statement") ))))
+
+(define (parse_statement token remaining_tokens)
+  (cond ( (tokenMatch token 'TOKEN_PRINT)
+	  (parse_print_statement remaining_tokens) )
+	(else (error "unsupported statement type"))))
+
+(define (parse_declaration token remaining_tokens)
+  (parse_statement token remaining_tokens))
