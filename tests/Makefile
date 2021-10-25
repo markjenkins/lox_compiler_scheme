@@ -23,10 +23,10 @@ test3: test_alt_unfold_concat.scm
 	$(SCM) $<
 
 %.output.txt.d:
-	echo $(@:txt.d=txt) $@: $(@:output.txt.d=lox) $(@:output.txt.d=expected.txt) ../compile_lox_to_bytecode_concat.scm > $@
+	echo $(@:txt.d=txt) $@: $(@:output.txt.d=lox) $(@:output.txt.d=expected.txt) ../compile_lox_expr_to_bytecode_concat.scm > $@
 
 include $(LOX_COMPILE_TESTS:.output.txt=.output.txt.d)
 
 %.output.txt:
-	$(SCM) ../compile_lox_to_bytecode_concat.scm < $< > $@
+	$(SCM) ../compile_lox_expr_to_bytecode_concat.scm < $< > $@
 	cmp $@ $(basename $<).expected.txt
