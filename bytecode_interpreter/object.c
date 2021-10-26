@@ -65,7 +65,7 @@ void printObject(Value * value){
     ObjString * s = value->obj;
     fputs("\"", stdout);
     fputs(s->chars, stdout);
-    fputs("\"\n", stdout);
+    fputs("\"", stdout);
   }
   else{
     fputs("unsupported object type print request\n", stderr);

@@ -30,7 +30,6 @@
 #include "memory.h"
 #include "object.h"
 #include "value.h"
-#include "printobject.h"
 #include "chunk.h"
 #include "vm.h"
 #include "read.h"
@@ -56,29 +55,8 @@ int main(int argc, char** argv){
   }
   pop(vm, vm->operand1);
 
-  if (vm->operand1->type == VAL_NUMBER){
-    /* int2str isn't really compatible with long type of number */
-    fputs( int2str(vm->operand1->number, 10, 1), stdout);
-    fputs("\n", stdout);
-  }
-  else if (vm->operand1->type == VAL_NIL ){
-    fputs("nil\n", stdout);
-  }
-  else if (vm->operand1->type == VAL_BOOL){
-    if (vm->operand1->boolean){
-      fputs("true\n", stdout);
-    }
-    else {
-      fputs("false\n", stdout);
-    }
-  }
-  else if (vm->operand1->type == VAL_OBJ){
-    printObject(vm->operand1);
-  }
-  else {
-    fputs("top of stack is not a supported type\n", stderr);
-    return EXIT_FAILURE;
-  }
+  printValue(vm->operand1);
+  fputs("\n", stdout);
 
   freeVM(vm);
   free_via_reallocate(vm, sizeof(VM)); /* malloc at top of main() */

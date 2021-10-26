@@ -32,6 +32,7 @@
 #include "chunk.h"
 #include "vm.h"
 #include "memory.h"
+#include "printobject.h"
 
 void initValueArray(ValueArray* array) {
   array->values = NULL;
@@ -114,4 +115,29 @@ void freeValueArray(ValueArray* array) {
   size_t oldCount = array->count;
   free_via_reallocate(array->values, sizeof(Value) * (oldCount) );
   initValueArray(array);
+}
+
+void printValue(Value * value){
+  if (value->type == VAL_NUMBER){
+    /* int2str isn't really compatible with long type of number */
+    fputs( int2str(value->number, 10, 1), stdout);
+  }
+  else if (value->type == VAL_NIL ){
+    fputs("nil", stdout);
+  }
+  else if (value->type == VAL_BOOL){
+    if (value->boolean){
+      fputs("true", stdout);
+    }
+    else {
+      fputs("false", stdout);
+    }
+  }
+  else if (value->type == VAL_OBJ){
+    printObject(value);
+  }
+  else {
+    fputs("value for printing supported type\n", stderr);
+    /* would be good to set a VM panic flag here */
+  }
 }
