@@ -10,14 +10,14 @@ bin: $(EXPRPRINT_BIN) exprprint.gcc
 sourceswh = chunk.c memory.c read.c simplerealloc.c value.c vm.c object.c commonmain.c
 
 # add exprprintmain.c to the list of c sources
-sources = $(sourceswh) exprprintmain.c
+exprprint_sources = $(sourceswh) exprprintmain.c
 
 additional_headers = common.h printobject.h copystring.h freeobjects.h
 
 # all .c and .h files with common.h added as there is no common.c 
-source_n_headers = $(sources) $(sourceswh:.c=.h) $(additional_headers)
+exprprint_source_n_headers = $(exprprint_sources) $(sourceswh:.c=.h) $(additional_headers)
 
-exprprint.%.M1: $(source_n_headers)
+exprprint.%.M1: $(exprprint_source_n_headers)
 	./compile_exprprint_w_M2Planet.bash $(subst .,,$(suffix $(basename $@)))
 
 %.hex2: %.M1
@@ -41,14 +41,14 @@ exprprint.d:
 
 include exprprint.d
 
-# use gcc -MM to discover .h depends of our $(sources) .c files
+# use gcc -MM to discover .h depends of our $(exprprint_sources) .c files
 %.d: %.c
 	@set -e; rm -f $@; $(CC) -MM $< > $@.$$$$; \
 	sed 's,\($*\)\.o[ :]*,\1.o $@ : ,g' < $@.$$$$ > $@; \
 	rm -f $@.$$$$
 
 # import .d rules created above
-include $(sources:.c=.d)
+include $(exprprint_sources:.c=.d)
 
 # be more explicit in building M2libc/bootstrappable.c to bootstrappable.o
 # we don't want to make M2libc/bootstrappable.o as that would conflict
@@ -58,7 +58,7 @@ bootstrappable.o: M2libc/bootstrappable.c
 	$(CC) -c M2libc/bootstrappable.c -o bootstrappable.o
 
 # and we append bootstrapple.o to this object list
-exprprint.gcc: $(sources:.c=.o) bootstrappable.o
+exprprint.gcc: $(exprprint_sources:.c=.o) bootstrappable.o
 	$(CC) -o $@ $^
 
 tests: bin
