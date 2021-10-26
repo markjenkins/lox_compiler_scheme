@@ -32,5 +32,7 @@ M2-Planet \
     -f read.c \
     -f freeobjects.h \
     -f vm.c \
+    -f commonmain.h \
+    -f commonmain.c \
     -f exprprintmain.c \
     -o exprprint.$arch.M1

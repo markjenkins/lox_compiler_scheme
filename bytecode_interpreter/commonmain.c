@@ -1,6 +1,4 @@
-/*  A derivitive work of https://craftinginterpreters.com
-
-    Copyright (c) 2015 Robert Nystrom
+/*  Copyright (c) 2021 Mark Jenkins <mark@markjenkins.ca>
 
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the "Software"), to
@@ -19,9 +17,6 @@
     LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
     FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
     IN THE SOFTWARE.
-
-    Ported to M2-Planet C variant by
-    @author Mark Jenkins <mark@markjenkins.ca>
 */
 
 #include <stdlib.h>
@@ -32,26 +27,26 @@
 #include "value.h"
 #include "chunk.h"
 #include "vm.h"
-#include "commonmain.h"
+#include "read.h"
 
-int main(int argc, char** argv){
-  /* matching free at bottom of main() */
-  VM * vm = malloc_via_reallocate(sizeof(VM));
-  /* matching free at bottom of main() */
-  Chunk * chunk = malloc_via_reallocate(sizeof(Chunk));
-  int run_result = common_vm_chunk_init_and_run(vm, chunk, TRUE);
-  if(run_result){
-    return EXIT_FAILURE;
-  }
-  pop(vm, vm->operand1);
+/* caller is just responsible for malloc of vm and chunk */
+int common_vm_chunk_init_and_run(VM * vm, Chunk * chunk,
+				     int exit_on_return){
+    initVM(vm);
+    initChunk(chunk);
+    if (!read_file_into_chunk(stdin, chunk, vm)){
+      fputs("reading input file failed\n", stderr);
+      return EXIT_FAILURE;
+    }
 
-  printValue(vm->operand1);
-  fputs("\n", stdout);
-
-  freeVM(vm);
-  free_via_reallocate(vm, sizeof(VM)); /* malloc at top of main() */
-  freeChunk(chunk);
-  free_via_reallocate(chunk, sizeof(Chunk)); /* malloc at top of main() */
-  return EXIT_SUCCESS;
-
+    /* needed when we're just doing one expression or set of declarations
+       ending with OP_RETURN */
+    if(exit_on_return){
+      vm->exit_on_return = TRUE;
+    }
+    int result = interpret(vm, chunk);
+    if (result!=INTERPRET_OK){
+      return EXIT_FAILURE;
+    }
+    return EXIT_SUCCESS;
 }
