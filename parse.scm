@@ -234,6 +234,15 @@
 (define (parse_expression token remaining_tokens)
   (parse_precedence PREC_ASSIGNMENT token remaining_tokens))
 
+(define (check_semicolon tokens)
+  (and (pair? tokens)
+       (tokenMatch (car tokens) 'TOKEN_SEMICOLON)))
+
+(define (consume_semicolon_provide_next_state tokens output_list error_msg)
+  (if (check_semicolon tokens)
+      (cons output_list (cdr tokens))
+      (error error_msg)))
+
 (define (parse_print_statement remaining_tokens)
   (if (not (pair? remaining_tokens))
       (error "token expected after print keyword")
@@ -241,23 +250,19 @@
 						 (cdr remaining_tokens)))
 	      (parseexproutput (car parseexprresult))
 	      (parseexprafttokens (cdr parseexprresult)) )
-	(if (and (pair? parseexprafttokens)
-		 (tokenMatch (car parseexprafttokens) 'TOKEN_SEMICOLON))
-	    (cons
-	     (append parseexproutput (list "OP_PRINT" "\n"))
-	     (cdr parseexprafttokens) )
-	    (error "semi-colon expected after statement") ))))
+	(consume_semicolon_provide_next_state
+	 parseexprafttokens
+	 (append parseexproutput (list "OP_PRINT" "\n"))
+	 "semi-colon expected after statement") ) ) )
 
 (define (parse_expression_statement token remaining_tokens)
   (let* ( (parseexprresult (parse_expression token remaining_tokens))
 	  (parseexproutput (car parseexprresult))
 	  (parseexprafttokens (cdr parseexprresult)) )
-    (if (and (pair? parseexprafttokens)
-	     (tokenMatch (car parseexprafttokens) 'TOKEN_SEMICOLON))
-	(cons
-	 (append parseexproutput (list "OP_POP" "\n"))
-	 (cdr parseexprafttokens) )
-	(error "semi-colon expected after statement") )))
+    (consume_semicolon_provide_next_state
+     parseexprafttokens
+     (append parseexproutput (list "OP_POP" "\n"))
+     "semi-colon expected after statement") ))
 
 (define (parse_statement token remaining_tokens)
   (cond ( (tokenMatch token 'TOKEN_PRINT)
