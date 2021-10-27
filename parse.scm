@@ -248,10 +248,21 @@
 	     (cdr parseexprafttokens) )
 	    (error "semi-colon expected after statement") ))))
 
+(define (parse_expression_statement token remaining_tokens)
+  (let* ( (parseexprresult (parse_expression token remaining_tokens))
+	  (parseexproutput (car parseexprresult))
+	  (parseexprafttokens (cdr parseexprresult)) )
+    (if (and (pair? parseexprafttokens)
+	     (tokenMatch (car parseexprafttokens) 'TOKEN_SEMICOLON))
+	(cons
+	 (append parseexproutput (list "OP_POP" "\n"))
+	 (cdr parseexprafttokens) )
+	(error "semi-colon expected after statement") )))
+
 (define (parse_statement token remaining_tokens)
   (cond ( (tokenMatch token 'TOKEN_PRINT)
 	  (parse_print_statement remaining_tokens) )
-	(else (error "unsupported statement type"))))
+	(else (parse_expression_statement token remaining_tokens))))
 
 (define (parse_declaration token remaining_tokens)
   (parse_statement token remaining_tokens))

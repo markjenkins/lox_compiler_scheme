@@ -71,6 +71,15 @@ void push(VM * vm, Value * value){
   vm->stackTop = incrementValuePointer(vm->stackTop);
 }
 
+void toss_pop(VM * vm){
+  if (vm->stackTop == vm->stack){
+    fputs("stack underflow\n", stderr);
+    return;
+  }
+  Value * newStackTop = decrementValuePointer(vm->stackTop);
+  vm->stackTop = newStackTop;
+}
+
 void pop(VM * vm, Value * targetValue){
   if (vm->stackTop == vm->stack){
     fputs("stack underflow\n", stderr);
@@ -189,6 +198,9 @@ int run_vm(VM * vm, Chunk * chunk){
       v = soft_push(vm);
       v->type = VAL_BOOL;
       v->boolean = FALSE;
+    }
+    else if (instruction == OP_POP){
+      toss_pop(vm);
     }
     else if (instruction == OP_NOT){
       pop(vm, operand1);

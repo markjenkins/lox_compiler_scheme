@@ -97,6 +97,9 @@ int read_opcode(FILE* in){
   else if ( 0==strcmp("OP_FALSE", inputbuffer) ){
     return OP_FALSE;
   }
+  else if ( 0==strcmp("OP_POP", inputbuffer) ){
+    return OP_POP;
+  }
   else if ( 0==strcmp("OP_NOT", inputbuffer) ){
     return OP_NOT;
   }
