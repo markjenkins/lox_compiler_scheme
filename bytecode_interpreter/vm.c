@@ -208,6 +208,11 @@ int run_vm(VM * vm, Chunk * chunk){
 	return INTERPRET_BYTECODE_ERROR;
       }
     }
+    else if (instruction == OP_PRINT){
+      pop(vm, operand1);
+      printValue(operand1);
+      fputs("\n", stdout);
+    }
     else if (instruction == OP_EQUAL){
       pop(vm, operand2);
       pop(vm, operand1);

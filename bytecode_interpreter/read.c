@@ -82,6 +82,9 @@ int read_opcode(FILE* in){
   else if ( 0==strcmp("OP_NEGATE", inputbuffer) ){
     return OP_NEGATE;
   }
+  else if ( 0==strcmp("OP_PRINT", inputbuffer) ){
+    return OP_PRINT;
+  }
   else if ( 0==strcmp("OP_CONSTANT", inputbuffer) ){
     return OP_CONSTANT;
   }

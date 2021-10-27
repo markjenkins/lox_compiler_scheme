@@ -10,6 +10,10 @@ bytecode_interpreter/*.o
 bytecode_interpreter/exprprint.d
 bytecode_interpreter/tests/*.lox.output.txt
 bytecode_interpreter/tests/*.lox.output.txt.d
+bytecode_interpreter/tests/*.lox.decl_output.txt
+bytecode_interpreter/tests/*.lox.decl_output.txt.d
 bytecode_interpreter/tests/*.output.gcc.txt
 bytecode_interpreter/tests/*.output.gcc.txt.d
+bytecode_interpreter/tests/*.decl_output.gcc.txt
+bytecode_interpreter/tests/*.decl_output.gcc.txt.d
 bytecode_interpreter/*.d
