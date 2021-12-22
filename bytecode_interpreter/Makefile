@@ -4,9 +4,6 @@ DECLPRINT_BIN=$(foreach arch,$(archs),declprint.$(arch))
 
 bin: $(EXPRPRINT_BIN) $(DECLPRINT_BIN) exprprint.gcc declprint.gcc
 
-# excludes M2lib/bootstrappable.c as we won't be changing it during dev of
-# this project
-#
 # excludes exprprintmain.c as there is no exprprintmain.h
 sourceswh = chunk.c memory.c read.c simplerealloc.c value.c vm.c object.c commonmain.c str2long.c
 
@@ -64,18 +61,10 @@ include declprint.d
 # import .d rules created above
 include $(exprprint_sources:.c=.d)
 
-# be more explicit in building M2libc/bootstrappable.c to bootstrappable.o
-# we don't want to make M2libc/bootstrappable.o as that would conflict
-# with rules in that dir, so we make our own bootstappable.o for this
-# build
-bootstrappable.o: M2libc/bootstrappable.c
-	$(CC) -c M2libc/bootstrappable.c -o bootstrappable.o
-
-# and we append bootstrapple.o to this object list
-exprprint.gcc: $(exprprint_sources:.c=.o) bootstrappable.o
+exprprint.gcc: $(exprprint_sources:.c=.o)
 	$(CC) -o $@ $^
 
-declprint.gcc: $(declprint_sources:.c=.o) bootstrappable.o
+declprint.gcc: $(declprint_sources:.c=.o)
 	$(CC) -o $@ $^
 
 tests: bin
