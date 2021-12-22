@@ -27,13 +27,13 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
-#include "M2libc/bootstrappable.h"
 #include "object.h"
 #include "value.h"
 #include "chunk.h"
 #include "vm.h"
 #include "memory.h"
 #include "copystring.h"
+#include "common.h"
 
 void resetVmStack(VM * vm){
   vm->stackTop = vm->stack;

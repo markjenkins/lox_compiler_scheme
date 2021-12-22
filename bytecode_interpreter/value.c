@@ -26,7 +26,6 @@
 
 #include <string.h>
 #include <stdio.h>
-#include "M2libc/bootstrappable.h"
 #include "object.h"
 #include "value.h"
 #include "chunk.h"
@@ -34,6 +33,7 @@
 #include "memory.h"
 #include "printobject.h"
 #include "str2long.h"
+#include "common.h"
 
 void initValueArray(ValueArray* array) {
   array->values = NULL;

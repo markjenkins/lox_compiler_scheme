@@ -24,5 +24,5 @@
     @author Mark Jenkins <mark@markjenkins.ca>
 */
 
-/* FALSE and TRUE are not defined here because they're included in
-   bootstrappable.h */
+#define TRUE 1
+#define FALSE 0

@@ -26,13 +26,13 @@
 
 #include <stdlib.h>
 #include <stdio.h>
-#include "M2libc/bootstrappable.h"
 #include "memory.h"
 #include "object.h"
 #include "value.h"
 #include "chunk.h"
 #include "vm.h"
 #include "commonmain.h"
+#include "common.h"
 
 int main(int argc, char** argv){
   /* matching free at bottom of main() */

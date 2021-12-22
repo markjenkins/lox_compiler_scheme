@@ -21,13 +21,13 @@
 
 #include <stdlib.h>
 #include <stdio.h>
-#include "M2libc/bootstrappable.h"
 #include "memory.h"
 #include "object.h"
 #include "value.h"
 #include "chunk.h"
 #include "vm.h"
 #include "read.h"
+#include "common.h"
 
 /* caller is just responsible for malloc of vm and chunk */
 int common_vm_chunk_init_and_run(VM * vm, Chunk * chunk,

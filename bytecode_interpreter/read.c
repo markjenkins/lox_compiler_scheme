@@ -22,7 +22,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include "M2libc/bootstrappable.h"
 #include "object.h"
 #include "value.h"
 #include "chunk.h"
@@ -31,6 +30,7 @@
 #include "read.h"
 #include "copystring.h"
 #include "str2long.h"
+#include "common.h"
 
 #define INPUT_BUFFER_SIZE 4096
 #define SPACE 32
