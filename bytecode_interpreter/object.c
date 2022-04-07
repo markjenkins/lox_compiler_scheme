@@ -31,6 +31,7 @@
 #include "object.h"
 #include "value.h"
 #include "chunk.h"
+#include "linkedstack.h"
 #include "vm.h"
 
 Obj* allocateObject(size_t size, int type, VM * vm){

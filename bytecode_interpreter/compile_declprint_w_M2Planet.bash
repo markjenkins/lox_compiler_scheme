@@ -20,6 +20,7 @@ M2-Planet \
     -f object.h \
     -f value.h \
     -f chunk.h \
+    -f linkedstack.h \
     -f vm.h \
     -f memory.h \
     -f memory.c \
@@ -33,6 +34,7 @@ M2-Planet \
     -f read.c \
     -f freeobjects.h \
     -f vm.c \
+    -f linkedstack.c \
     -f commonmain.h \
     -f commonmain.c \
     -f declprintmain.c \

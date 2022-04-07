@@ -269,5 +269,38 @@
 	  (parse_print_statement remaining_tokens) )
 	(else (parse_expression_statement token remaining_tokens))))
 
+(define (parse_variable expected_identifier_token error_msg)
+  (if (tokenMatch expected_identifier_token 'TOKEN_IDENTIFIER)
+      (tokenChars expected_identifier_token)
+      (error error_msg)))
+
+(define (parse_var_declaration remaining_tokens)
+  (if (not (pair? remaining_tokens))
+      (error "token expected after print keyword")
+      (let ( (var_name (parse_variable
+			(car remaining_tokens)
+			"Variable name expected after var declaration"))
+	     (tokens_after_identifier (cdr remaining_tokens)))
+	(cond ( (check_semicolon tokens_after_identifier)
+		(cons
+		 (list "OP_NIL" "\n" "OP_DEFINE_GLOBAL \"" var_name "\"\n")
+		 (cdr tokens_after_identifier)))
+	      ( (tokenMatch (car tokens_after_identifier) 'TOKEN_EQUAL)
+		(let ( (parseexprresult
+			 (parse_expression
+			  (cadr tokens_after_identifier) ; token
+			  (cddr tokens_after_identifier)
+			  ))
+			)
+		  (consume_semicolon_provide_next_state
+		   (cdr parseexprresult) ; tokens
+		   ;; output_list
+		   (append (car parseexprresult)
+			   (list "OP_DEFINE_GLOBAL \"" var_name "\"\n"))
+		   "semi colon expected after var declaration and assignment")))
+	      (else (error "var form not supported")) ))))
+
 (define (parse_declaration token remaining_tokens)
-  (parse_statement token remaining_tokens))
+  (cond ( (tokenMatch token 'TOKEN_VAR)
+	  (parse_var_declaration remaining_tokens))
+	( else (parse_statement token remaining_tokens))))

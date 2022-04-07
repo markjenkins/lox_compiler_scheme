@@ -33,6 +33,7 @@
    <stddef.h>
    "object.h"
    "value.h"
+   "linkedstack.h"
  */
 
 #define INTERPRET_OK 0
@@ -48,6 +49,11 @@ struct VM_ {
   Value * operand2;
   int exit_on_return;
   Obj * objects;
+
+  /* a stack/linked list is the wrong data structure for tracking globals
+     but we're planning to replace that later.
+   */
+  LinkedEntry * globals;
 };
 typedef struct VM_ VM;
 

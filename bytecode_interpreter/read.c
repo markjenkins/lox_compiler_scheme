@@ -25,6 +25,7 @@
 #include "object.h"
 #include "value.h"
 #include "chunk.h"
+#include "linkedstack.h"
 #include "vm.h"
 #include "memory.h"
 #include "read.h"
@@ -101,11 +102,15 @@ int read_opcode(FILE* in){
   else if ( 0==strcmp("OP_POP", inputbuffer) ){
     return OP_POP;
   }
+  else if ( 0==strcmp("OP_DEFINE_GLOBAL", inputbuffer) ){
+    return OP_DEFINE_GLOBAL;
+  }
   else if ( 0==strcmp("OP_NOT", inputbuffer) ){
     return OP_NOT;
   }
-
-  fputs("opcode not recognized\n", stderr);
+  fputs("opcode ", stderr);
+  fputs(inputbuffer, stderr);
+  fputs(" not recognized\n", stderr);
   return EOF;
 }
 
@@ -190,7 +195,8 @@ int read_file_into_chunk(FILE* in, Chunk * chunk, VM * vm){
     /* write the bytecode */
     writeChunk(chunk, opcode_or_eof);
 
-    if (opcode_or_eof == OP_CONSTANT){
+    if ( (opcode_or_eof == OP_CONSTANT) ||
+	 (opcode_or_eof == OP_DEFINE_GLOBAL)){
       read_constant(in, constValue, vm);
       if(constValue->type == VAL_NIL){
 	return FALSE;

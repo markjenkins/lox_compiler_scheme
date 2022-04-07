@@ -29,6 +29,7 @@
 #include <stdio.h>
 #include "object.h"
 #include "value.h"
+#include "linkedstack.h"
 #include "chunk.h"
 #include "vm.h"
 #include "memory.h"
@@ -48,6 +49,10 @@ void initVM(VM * vm){
   resetVmStack(vm);
   vm->objects = NULL;
   vm->exit_on_return = FALSE;
+
+  /* empty linked list just like objects, a poor data structure choice.
+     We'll replace this with a hash table malloc and init later */
+  vm->globals = NULL;
 }
 void freeVM(VM * vm){
   /* malloced in initVM */
@@ -56,6 +61,11 @@ void freeVM(VM * vm){
   free_via_reallocate(vm->operand1, sizeof(Value)*2);
   vm->stack = NULL;
   vm->stackTop = NULL;
+  /* just unallocate the values and not the string keys or
+     underlying object values, because freeObjects() below iw responsible for */
+  free_linked_stack_values(vm->globals);
+  vm->globals = NULL;
+
   freeObjects(vm);
   vm->objects = NULL;
 }
@@ -152,6 +162,7 @@ int run_vm(VM * vm, Chunk * chunk){
   Value * operand1 = vm->operand1;
   Value * operand2 = vm->operand2;
   Value * v;
+  LinkedEntry * linked_entry;
 
   if((chunk->code==NULL) || (chunk->count==0) ){
     fputs("chunk code is still null or count 0 before execution\n", stderr);
@@ -201,6 +212,38 @@ int run_vm(VM * vm, Chunk * chunk){
     }
     else if (instruction == OP_POP){
       toss_pop(vm);
+    }
+    else if (instruction ==  OP_DEFINE_GLOBAL){
+      ip = ip + sizeof(char);
+      index = ip[0];
+      v = accessChunkConstant(chunk, index);
+      if(v==NULL){
+	fputs("null value access\n", stderr);
+	return INTERPRET_BYTECODE_ERROR;
+      }
+      else if ( (v->type != VAL_OBJ) ){
+	fputs("StrObj expected as constant for OP_DEFINE_GLOBAL found non-obj\n", stderr);
+	return INTERPRET_BYTECODE_ERROR;
+      }
+      else if( (v->obj->type != OBJ_STRING) ){
+	fputs("StrObj expected as constant for OP_DEFINE_GLOBAL found non-str obj\n", stderr);
+	return INTERPRET_BYTECODE_ERROR;
+      }
+
+      /* this pair of mallocs will be freed by free_linked_stack_values()
+	 which will be called by freevm */
+      linked_entry = malloc_via_reallocate(sizeof(LinkedEntry));
+      linked_entry->value = malloc_via_reallocate(sizeof(Value));
+      linked_entry->key = v->obj;
+      pop(vm, linked_entry->value);
+
+      /* add this global the linkedstack LinkedEntry
+	 which should be replaced sometime with a hash table
+	 for now, we're being so lazy that we're not even searching
+	 for an entry with the same key?
+       */
+      linked_entry->next = vm->globals;
+      vm->globals = linked_entry;
     }
     else if (instruction == OP_NOT){
       pop(vm, operand1);

@@ -30,6 +30,7 @@
 #include "object.h"
 #include "value.h"
 #include "chunk.h"
+#include "linkedstack.h"
 #include "vm.h"
 #include "memory.h"
 
