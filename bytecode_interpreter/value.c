@@ -40,18 +40,39 @@ void initValueArray(ValueArray* array) {
 }
 
 Value * incrementValuePointer(Value * value){
-  void *  newValue = value + sizeof(Value);
+  /* without casts to void, this can be expressed as
+     return value + 1;
+     This whole routine was done out of a finding that the above
+     kind of pointer arithmatic was not do-able with M2-Planet
+  */
+  void *  newValue = value;
+  newValue = newValue + sizeof(Value);
   return newValue;
+  /*return value + 1; // works with gcc */
 }
 
 Value * decrementValuePointer(Value * value){
-  void *  newValue = value - sizeof(Value);
+  /* without casts to void, this can be expressed as
+     return value - 1;
+     This whole routine was done out of a finding that the above
+     kind of pointer arithmatic was not do-able with M2-Planet
+  */
+  void *  newValue = value;
+  newValue = newValue - sizeof(Value);
   return newValue;
+  /*return value - 1; // works with gcc */
 }
 
 Value * bumpValuePointer(Value * value, size_t count){
-  void *  newValue = value + (sizeof(Value) * (count));
+  /* without casts to void, this can be expressed as
+     return value + count;
+     This whole routine was done because of a finding that the above
+     kind of pointer arithmatic was not do-able with M2-Planet
+  */
+  void *  newValue = value;
+  newValue = newValue + (sizeof(Value) * (count));
   return newValue;
+  /*return value + count; // works with gcc */
 }
 
 void writeValueArray(ValueArray* array, Value * value) {
