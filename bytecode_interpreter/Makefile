@@ -1,3 +1,5 @@
+CFLAGS=-g
+
 archs=amd64 x86 aarch64
 EXPRPRINT_BIN=$(foreach arch,$(archs),exprprint.$(arch))
 DECLPRINT_BIN=$(foreach arch,$(archs),declprint.$(arch))
