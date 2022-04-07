@@ -33,6 +33,7 @@
 #include "vm.h"
 #include "memory.h"
 #include "printobject.h"
+#include "str2long.h"
 
 void initValueArray(ValueArray* array) {
   array->values = NULL;
@@ -139,9 +140,17 @@ void freeValueArray(ValueArray* array) {
 }
 
 void printValue(Value * value){
+  char * output;
+  long number = value->number;
   if (value->type == VAL_NUMBER){
-    /* int2str isn't really compatible with long type of number */
-    fputs( int2str(value->number, 10, 1), stdout);
+    if (value->number < 0){
+      fputs("-", stdout);
+      number = -number; /* make positive */
+    }
+    output = malloc_via_reallocate(21);
+    long2str(number, output, 21);
+    fputs( output, stdout);
+    free_via_reallocate(output, 21);
   }
   else if (value->type == VAL_NIL ){
     fputs("nil", stdout);

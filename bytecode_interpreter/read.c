@@ -30,6 +30,7 @@
 #include "memory.h"
 #include "read.h"
 #include "copystring.h"
+#include "str2long.h"
 
 #define INPUT_BUFFER_SIZE 4096
 #define SPACE 32
@@ -176,7 +177,7 @@ void read_constant(FILE* in, Value* value, VM * vm){
   }
   inputbuffer[index] = 0;
   value->type = VAL_NUMBER;
-  value->number = strtoint(inputbuffer);
+  value->number = str2long(inputbuffer);
 }
 
 int read_file_into_chunk(FILE* in, Chunk * chunk, VM * vm){

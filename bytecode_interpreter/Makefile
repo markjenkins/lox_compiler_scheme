@@ -8,7 +8,7 @@ bin: $(EXPRPRINT_BIN) $(DECLPRINT_BIN) exprprint.gcc declprint.gcc
 # this project
 #
 # excludes exprprintmain.c as there is no exprprintmain.h
-sourceswh = chunk.c memory.c read.c simplerealloc.c value.c vm.c object.c commonmain.c
+sourceswh = chunk.c memory.c read.c simplerealloc.c value.c vm.c object.c commonmain.c str2long.c
 
 # add exprprintmain.c to the list of c sources
 exprprint_sources = $(sourceswh) exprprintmain.c

@@ -25,6 +25,7 @@ M2-Planet \
     -f memory.c \
     -f printobject.h \
     -f object.c \
+    -f str2long.c \
     -f value.c \
     -f chunk.c \
     -f copystring.h \
