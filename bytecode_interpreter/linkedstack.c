@@ -14,3 +14,17 @@ void free_linked_stack_values(LinkedEntry * stacktop){
     free_via_reallocate(prev, sizeof(LinkedEntry));
   }
 }
+
+LinkedEntry * get_matching_linked_entry(LinkedEntry * stacktop,
+					ObjString * key){
+  LinkedEntry * next = stacktop;
+  LinkedEntry * prev = NULL;
+  while(next!=NULL){
+    prev = next;
+    next = prev->next;
+    if( stringEqual(key, prev->key) ){
+      return prev;
+    }
+  }
+  return NULL;
+}

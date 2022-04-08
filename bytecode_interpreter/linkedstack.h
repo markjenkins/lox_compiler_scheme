@@ -13,3 +13,6 @@ struct LinkedEntry_ {
 typedef struct LinkedEntry_ LinkedEntry;
 
 void free_linked_stack_values(LinkedEntry *);
+
+LinkedEntry * get_matching_linked_entry(LinkedEntry * stacktop,
+					ObjString * key);

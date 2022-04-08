@@ -105,6 +105,9 @@ int read_opcode(FILE* in){
   else if ( 0==strcmp("OP_DEFINE_GLOBAL", inputbuffer) ){
     return OP_DEFINE_GLOBAL;
   }
+  else if ( 0==strcmp("OP_GET_GLOBAL", inputbuffer) ){
+    return OP_GET_GLOBAL;
+  }
   else if ( 0==strcmp("OP_NOT", inputbuffer) ){
     return OP_NOT;
   }
@@ -196,6 +199,7 @@ int read_file_into_chunk(FILE* in, Chunk * chunk, VM * vm){
     writeChunk(chunk, opcode_or_eof);
 
     if ( (opcode_or_eof == OP_CONSTANT) ||
+	 (opcode_or_eof == OP_GET_GLOBAL) ||
 	 (opcode_or_eof == OP_DEFINE_GLOBAL)){
       read_constant(in, constValue, vm);
       if(constValue->type == VAL_NIL){

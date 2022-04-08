@@ -154,11 +154,11 @@ int global_var_error_handle(Value * v){
     return INTERPRET_BYTECODE_ERROR;
   }
   else if ( (v->type != VAL_OBJ) ){
-    fputs("StrObj expected as constant for OP_DEFINE_GLOBAL found non-obj\n", stderr);
+    fputs("StrObj expected as constant for OP_*_GLOBAL found non-obj\n", stderr);
     return INTERPRET_BYTECODE_ERROR;
   }
   else if( (v->obj->type != OBJ_STRING) ){
-    fputs("StrObj expected as constant for OP_DEFINE_GLOBAL found non-str obj\n", stderr);
+    fputs("StrObj expected as constant for OP_*_GLOBAL found non-str obj\n", stderr);
     return INTERPRET_BYTECODE_ERROR;
   }
 
@@ -181,6 +181,7 @@ int run_vm(VM * vm, Chunk * chunk){
   Value * v;
   LinkedEntry * linked_entry;
   int error_check = INTERPRET_OK;
+  ObjString * ident_string;
 
   if((chunk->code==NULL) || (chunk->count==0) ){
     fputs("chunk code is still null or count 0 before execution\n", stderr);
@@ -254,6 +255,25 @@ int run_vm(VM * vm, Chunk * chunk){
        */
       linked_entry->next = vm->globals;
       vm->globals = linked_entry;
+    }
+    else if (instruction ==  OP_GET_GLOBAL){
+      ip = ip + sizeof(char);
+      index = ip[0];
+      v = accessChunkConstant(chunk, index);
+      error_check = global_var_error_handle(v);
+      if (error_check != INTERPRET_OK){
+	return error_check;
+      }
+
+      ident_string = v->obj;
+      linked_entry = get_matching_linked_entry(vm->globals, ident_string);
+      if(NULL==linked_entry){
+	fputs("unknown global \"", stderr);
+	fputs(ident_string->chars, stderr);
+	fputs("\"\n", stderr);
+	return INTERPRET_RUNTIME_ERROR;
+      }
+      push(vm, linked_entry->value);
     }
     else if (instruction == OP_NOT){
       pop(vm, operand1);
