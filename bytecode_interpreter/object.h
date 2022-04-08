@@ -56,3 +56,4 @@ struct ObjString_ {
 
 typedef struct ObjString_ ObjString;
 
+int stringEqual(ObjString* aString, ObjString* bString);

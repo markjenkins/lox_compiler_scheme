@@ -33,6 +33,7 @@
 #include "chunk.h"
 #include "linkedstack.h"
 #include "vm.h"
+#include "common.h"
 
 Obj* allocateObject(size_t size, int type, VM * vm){
   Obj* object = malloc_via_reallocate(size);
@@ -71,4 +72,14 @@ void printObject(Value * value){
   else{
     fputs("unsupported object type print request\n", stderr);
   }
+}
+
+int stringEqual(ObjString* aString, ObjString* bString){
+    if ( (aString->type != OBJ_STRING) || (bString->type != OBJ_STRING) ){
+      fputs("stringEqual called with incompatible one or more not string\n",
+	    stderr);
+      return FALSE;
+    }
+    return ( ((aString->length) == (bString->length)) &&
+	     (strncmp(aString->chars, bString->chars, aString->length)==0) );
 }

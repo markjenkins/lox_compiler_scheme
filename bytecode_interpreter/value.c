@@ -92,15 +92,7 @@ int valuesEqual(Value * a, Value * b){
     return TRUE;
   }
   else if (a->type == VAL_OBJ){
-    ObjString* aString = a->obj;
-    ObjString* bString = b->obj;
-    if ( (aString->type != OBJ_STRING) || (bString->type != OBJ_STRING) ){
-      fputs("valuesEqual called with incompatible one or more not string\n",
-	    stderr);
-      return FALSE;
-    }
-    return ( ((aString->length) == (bString->length)) &&
-	     (strncmp(aString->chars, bString->chars, aString->length)==0) );
+    return stringEqual(a->obj, b->obj);
   }
   else{
     fputs("valuesEqual called with unsupported types\n", stderr);
