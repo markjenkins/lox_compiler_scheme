@@ -148,6 +148,23 @@ void concatenate(VM * vm){
   v->obj = takeString(chars, length, vm);
 }
 
+int global_var_error_handle(Value * v){
+  if(v==NULL){
+    fputs("null value access\n", stderr);
+    return INTERPRET_BYTECODE_ERROR;
+  }
+  else if ( (v->type != VAL_OBJ) ){
+    fputs("StrObj expected as constant for OP_DEFINE_GLOBAL found non-obj\n", stderr);
+    return INTERPRET_BYTECODE_ERROR;
+  }
+  else if( (v->obj->type != OBJ_STRING) ){
+    fputs("StrObj expected as constant for OP_DEFINE_GLOBAL found non-str obj\n", stderr);
+    return INTERPRET_BYTECODE_ERROR;
+  }
+
+  return INTERPRET_OK;
+}
+
 int run_vm(VM * vm, Chunk * chunk){
   /* note that originally, ip and chunk were part of the vm struct
      whereas here we just have chunk pass through as an arg from interpret
@@ -163,6 +180,7 @@ int run_vm(VM * vm, Chunk * chunk){
   Value * operand2 = vm->operand2;
   Value * v;
   LinkedEntry * linked_entry;
+  int error_check = INTERPRET_OK;
 
   if((chunk->code==NULL) || (chunk->count==0) ){
     fputs("chunk code is still null or count 0 before execution\n", stderr);
@@ -217,17 +235,9 @@ int run_vm(VM * vm, Chunk * chunk){
       ip = ip + sizeof(char);
       index = ip[0];
       v = accessChunkConstant(chunk, index);
-      if(v==NULL){
-	fputs("null value access\n", stderr);
-	return INTERPRET_BYTECODE_ERROR;
-      }
-      else if ( (v->type != VAL_OBJ) ){
-	fputs("StrObj expected as constant for OP_DEFINE_GLOBAL found non-obj\n", stderr);
-	return INTERPRET_BYTECODE_ERROR;
-      }
-      else if( (v->obj->type != OBJ_STRING) ){
-	fputs("StrObj expected as constant for OP_DEFINE_GLOBAL found non-str obj\n", stderr);
-	return INTERPRET_BYTECODE_ERROR;
+      error_check = global_var_error_handle(v);
+      if (error_check != INTERPRET_OK){
+	return error_check;
       }
 
       /* this pair of mallocs will be freed by free_linked_stack_values()
