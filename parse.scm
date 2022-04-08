@@ -137,6 +137,11 @@
 (define parse_nil (make_parse_literal "OP_NIL"))
 (define parse_true (make_parse_literal "OP_TRUE"))
 
+(define (parse_identifier identifier_token following_token remaining_tokens)
+  (cons
+   (list "OP_GET_GLOBAL \"" (tokenChars identifier_token) "\"\n")
+   (cons following_token remaining_tokens) ) )
+
 (define
   PRECEDENCE_RULES
   (list (cons 'TOKEN_LEFT_PAREN  (list parse_grouping '()          PREC_NONE))
@@ -153,6 +158,7 @@
 	(cons 'TOKEN_GREATER_EQUAL (list '() parse_binary PREC_COMPARISON))
 	(cons 'TOKEN_LESS        (list '() parse_binary PREC_COMPARISON))
 	(cons 'TOKEN_LESS_EQUAL  (list '() parse_binary PREC_COMPARISON))
+	(cons 'TOKEN_IDENTIFIER  (list  parse_identifier '()         PREC_NONE))
 	(cons 'TOKEN_STRING      (list  parse_string  '()          PREC_NONE))
 	(cons 'TOKEN_NUMERIC     (list  parse_number  '()          PREC_NONE))
 	(cons 'TOKEN_FALSE       (list  parse_false   '()          PREC_NONE))
