@@ -278,7 +278,7 @@
 	  (parse_print_statement remaining_tokens) )
 	(else (parse_expression_statement token remaining_tokens))))
 
-(define (parse_variable expected_identifier_token error_msg)
+(define (parse_variable scope_state expected_identifier_token error_msg)
   (if (tokenMatch expected_identifier_token 'TOKEN_IDENTIFIER)
       (tokenChars expected_identifier_token)
       (error error_msg)))
@@ -287,6 +287,7 @@
   (if (not (pair? remaining_tokens))
       (error "token expected after print keyword")
       (let ( (var_name (parse_variable
+			scope_state
 			(car remaining_tokens)
 			"Variable name expected after var declaration"))
 	     (tokens_after_identifier (cdr remaining_tokens)))
