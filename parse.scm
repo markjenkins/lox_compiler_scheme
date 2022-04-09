@@ -273,7 +273,7 @@
      (append parseexproutput (list "OP_POP" "\n"))
      "semi-colon expected after statement") ))
 
-(define (parse_statement token remaining_tokens)
+(define (parse_statement scope_state token remaining_tokens)
   (cond ( (tokenMatch token 'TOKEN_PRINT)
 	  (parse_print_statement remaining_tokens) )
 	(else (parse_expression_statement token remaining_tokens))))
@@ -314,4 +314,4 @@
 (define (parse_declaration scope_state token remaining_tokens)
   (cond ( (tokenMatch token 'TOKEN_VAR)
 	  (parse_var_declaration scope_state remaining_tokens))
-	( else (parse_statement token remaining_tokens))))
+	( else (parse_statement scope_state token remaining_tokens))))
