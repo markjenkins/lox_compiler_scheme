@@ -250,10 +250,10 @@
       (cons output_list (cdr tokens))
       (error error_msg)))
 
-(define (parse_print_statement remaining_tokens)
+(define (parse_print_statement scope_state remaining_tokens)
   (if (not (pair? remaining_tokens))
       (error "token expected after print keyword")
-      (let* ( (parseexprresult (parse_expression #f ; fix me scope state
+      (let* ( (parseexprresult (parse_expression scope_state
 						 (car remaining_tokens)
 						 (cdr remaining_tokens)))
 	      (parseexproutput (car parseexprresult))
@@ -275,7 +275,7 @@
 
 (define (parse_statement scope_state token remaining_tokens)
   (cond ( (tokenMatch token 'TOKEN_PRINT)
-	  (parse_print_statement remaining_tokens) )
+	  (parse_print_statement scope_state remaining_tokens) )
 	(else (parse_expression_statement scope_state token remaining_tokens))))
 
 (define (parse_variable scope_state expected_identifier_token error_msg)
