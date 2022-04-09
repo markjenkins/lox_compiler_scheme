@@ -42,8 +42,9 @@
 (define (tokenMatch token type)
   (eq? (tokenType token) type))
 
-(define (parse_grouping bracket_token following_token remaining_tokens)
-  (let* ( (parseexprresult (parse_expression #f ; scope_state fixme
+(define (parse_grouping scope_state bracket_token following_token
+			remaining_tokens)
+  (let* ( (parseexprresult (parse_expression scope_state
 					     following_token
 					     remaining_tokens))
 	  (parseexproutput (car parseexprresult))
@@ -55,9 +56,9 @@
 	      (cdr parseexprafttokens))
 	(error ") token expected") ) ) )
 
-(define (parse_unary unary_token following_token remaining_tokens)
+(define (parse_unary scope_state unary_token following_token remaining_tokens)
   (let ( (parseprecresult (parse_precedence PREC_UNARY
-					    #f ; scope_state fixme
+					    scope_state
 					    following_token remaining_tokens)))
     ;; return value is a pair consisting first half, a list of the op codes
     ;; accumulated by parse_precedence + OP_NEGATE
@@ -80,7 +81,7 @@
 (define (add_newline_after_each lines)
   (reverse (add_newline_after_each_helper '() lines)))
 
-(define (parse_binary bin_op_token following_token remaining_tokens)
+(define (parse_binary scope_state bin_op_token following_token remaining_tokens)
   (let* ( (bin_op_tok_type (tokenType bin_op_token))
 	  (binary_opcodes
 	   (cond
@@ -109,7 +110,7 @@
 	   (parse_precedence
 	    (+ 1
 	       (parse_getPrecedenceRule bin_op_tok_type)) ; precedence
-	    #f ; scope_state fixme
+	    scope_state
 	    following_token ; token
 	    remaining_tokens)) ; remaining_tokens
 	  (outputsofar (car parseprecedence_result))
@@ -117,14 +118,14 @@
     (cons (append outputsofar (add_newline_after_each binary_opcodes))
 	  (cdr parseprecedence_result) ) ))
 
-(define (parse_string string_token following_token remaining_tokens)
+(define (parse_string scope_state string_token following_token remaining_tokens)
   ;; return value is a pair consisting of
   ;; * first half, a list of opcodes generated here
   ;; * second half, the remaining tokens
   (cons (list "OP_CONSTANT" " " "\"" (tokenChars string_token) "\"" "\n")
 	(cons following_token remaining_tokens)))
 
-(define (parse_number number_token following_token remaining_tokens)
+(define (parse_number scope_state number_token following_token remaining_tokens)
   ;; return value is a pair consisting of
   ;; * first half, a list of opcodes generated here
   ;; * second half, the remaining tokens
@@ -132,7 +133,7 @@
 	(cons following_token remaining_tokens)))
 
 (define (make_parse_literal outputstr)
-  (lambda (lit_token following_token remaining_tokens)
+  (lambda (scope_state lit_token following_token remaining_tokens)
     (cons (list outputstr "\n")
 	  (cons following_token remaining_tokens))))
 
@@ -140,7 +141,8 @@
 (define parse_nil (make_parse_literal "OP_NIL"))
 (define parse_true (make_parse_literal "OP_TRUE"))
 
-(define (parse_identifier identifier_token following_token remaining_tokens)
+(define (parse_identifier scope_state identifier_token
+			  following_token remaining_tokens)
   (cons
    (list "OP_GET_GLOBAL \"" (tokenChars identifier_token) "\"\n")
    (cons following_token remaining_tokens) ) )
@@ -193,7 +195,7 @@
 	(error "parse precedence rule lookup failure") ; should't happen
 	)))
 
-(define (parse_precedence_infix_loop precedence initlooptokens)
+(define (parse_precedence_infix_loop precedence scope_state initlooptokens)
   (let precedenceloop ( (infixaccum '())
 			(looptokens initlooptokens ))
     (if (and (pair? looptokens) ; why we should have TOKEN_EOF
@@ -202,6 +204,7 @@
 	(let ( (infixcallresult
 		( (parse_getInfixRule (tokenType
 				       (car looptokens)) )
+		  scope_state
 		  (car looptokens)
 		  (second looptokens)   ; fail if we're out
 		  (cddr looptokens) ) ) ) ; fail if we're out
@@ -218,6 +221,7 @@
   (let ( (prefixrulefunc (parse_getPrefixRule (tokenType token))) )
     (if (pair? remaining_tokens) ; perhaps having TOKEN_EOF would clean this up
 	(let* ( (prefixruleresult (prefixrulefunc
+				   scope_state
 				   token
 				   (car remaining_tokens)
 				   (cdr remaining_tokens) ))
@@ -226,7 +230,7 @@
 	  (if (pair? tokensaftprefix)
 	      (let ( (infixresult
 		      (parse_precedence_infix_loop
-		       precedence tokensaftprefix)) )
+		       precedence scope_state tokensaftprefix)) )
 		(cons (append prefixruleoutput (car infixresult))
 		      (cdr infixresult) ))
 	      prefixruleresult))
@@ -237,7 +241,7 @@
 	;; case if we had TOKEN_EOF defined, as there would be a
 	;; (car remaining_tokens) item to pass
 	(let ( (prefixruleresult
-		(prefixrulefunc token '() '())) )
+		(prefixrulefunc scope_state token '() '())) )
 	  (cons (car prefixruleresult) '() ) ))))
 
 (define (parse_expression scope_state token remaining_tokens)
