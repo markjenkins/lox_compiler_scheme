@@ -220,8 +220,11 @@
   ;; a prefix rule is expected to be found
   (let ( (prefixrulefunc (parse_getPrefixRule (tokenType token))) )
     (if (pair? remaining_tokens) ; perhaps having TOKEN_EOF would clean this up
-	(let* ( (prefixruleresult (prefixrulefunc
-				   scope_state
+	(let* ( (can_assign_adjusted_scope_state
+		 (scope_state_change_can_assign scope_state
+				    (<= precedence PREC_ASSIGNMENT)) )
+		(prefixruleresult (prefixrulefunc
+				   can_assign_adjusted_scope_state
 				   token
 				   (car remaining_tokens)
 				   (cdr remaining_tokens) ))
@@ -230,7 +233,9 @@
 	  (if (pair? tokensaftprefix)
 	      (let ( (infixresult
 		      (parse_precedence_infix_loop
-		       precedence scope_state tokensaftprefix)) )
+		       precedence
+		       can_assign_adjusted_scope_state
+		       tokensaftprefix)) )
 		(cons (append prefixruleoutput (car infixresult))
 		      (cdr infixresult) ))
 	      prefixruleresult))
@@ -241,7 +246,8 @@
 	;; case if we had TOKEN_EOF defined, as there would be a
 	;; (car remaining_tokens) item to pass
 	(let ( (prefixruleresult
-		(prefixrulefunc scope_state token '() '())) )
+		(prefixrulefunc scope_state ; note no change to can_assign
+				token '() '())) )
 	  (cons (car prefixruleresult) '() ) ))))
 
 (define (parse_expression scope_state token remaining_tokens)

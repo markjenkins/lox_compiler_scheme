@@ -8,3 +8,6 @@
 (define scope_state_local_count cadr)
 (define scope_state_depth caddr)
 (define scope_state_locals cdddr)
+
+(define (scope_state_change_can_assign scope_state can_assign)
+  (cons can_assign (cdr scope_state)) )
