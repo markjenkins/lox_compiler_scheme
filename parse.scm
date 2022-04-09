@@ -283,7 +283,7 @@
       (tokenChars expected_identifier_token)
       (error error_msg)))
 
-(define (parse_var_declaration remaining_tokens)
+(define (parse_var_declaration scope_state remaining_tokens)
   (if (not (pair? remaining_tokens))
       (error "token expected after print keyword")
       (let ( (var_name (parse_variable
@@ -297,7 +297,7 @@
 	      ( (tokenMatch (car tokens_after_identifier) 'TOKEN_EQUAL)
 		(let ( (parseexprresult
 			 (parse_expression
-			  #f ; fix me scope_state
+			  scope_state
 			  (cadr tokens_after_identifier) ; token
 			  (cddr tokens_after_identifier)
 			  ))
@@ -312,5 +312,5 @@
 
 (define (parse_declaration scope_state token remaining_tokens)
   (cond ( (tokenMatch token 'TOKEN_VAR)
-	  (parse_var_declaration remaining_tokens))
+	  (parse_var_declaration scope_state remaining_tokens))
 	( else (parse_statement token remaining_tokens))))
