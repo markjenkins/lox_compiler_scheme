@@ -263,8 +263,8 @@
 	 (append parseexproutput (list "OP_PRINT" "\n"))
 	 "semi-colon expected after statement") ) ) )
 
-(define (parse_expression_statement token remaining_tokens)
-  (let* ( (parseexprresult (parse_expression #f ; fix me scope state
+(define (parse_expression_statement scope_state token remaining_tokens)
+  (let* ( (parseexprresult (parse_expression scope_state
 					     token remaining_tokens))
 	  (parseexproutput (car parseexprresult))
 	  (parseexprafttokens (cdr parseexprresult)) )
@@ -276,7 +276,7 @@
 (define (parse_statement scope_state token remaining_tokens)
   (cond ( (tokenMatch token 'TOKEN_PRINT)
 	  (parse_print_statement remaining_tokens) )
-	(else (parse_expression_statement token remaining_tokens))))
+	(else (parse_expression_statement scope_state token remaining_tokens))))
 
 (define (parse_variable scope_state expected_identifier_token error_msg)
   (if (tokenMatch expected_identifier_token 'TOKEN_IDENTIFIER)
