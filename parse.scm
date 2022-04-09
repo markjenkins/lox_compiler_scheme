@@ -57,6 +57,7 @@
 
 (define (parse_unary unary_token following_token remaining_tokens)
   (let ( (parseprecresult (parse_precedence PREC_UNARY
+					    #f ; scope_state fixme
 					    following_token remaining_tokens)))
     ;; return value is a pair consisting first half, a list of the op codes
     ;; accumulated by parse_precedence + OP_NEGATE
@@ -108,6 +109,7 @@
 	   (parse_precedence
 	    (+ 1
 	       (parse_getPrecedenceRule bin_op_tok_type)) ; precedence
+	    #f ; scope_state fixme
 	    following_token ; token
 	    remaining_tokens)) ; remaining_tokens
 	  (outputsofar (car parseprecedence_result))
@@ -210,7 +212,7 @@
 	(cons (reverse infixaccum)
 	      looptokens) )) )
 
-(define (parse_precedence precedence token remaining_tokens)
+(define (parse_precedence precedence scope_state token remaining_tokens)
   ;; the assumption here is that we're called in a context where
   ;; a prefix rule is expected to be found
   (let ( (prefixrulefunc (parse_getPrefixRule (tokenType token))) )
@@ -239,7 +241,7 @@
 	  (cons (car prefixruleresult) '() ) ))))
 
 (define (parse_expression scope_state token remaining_tokens)
-  (parse_precedence PREC_ASSIGNMENT token remaining_tokens))
+  (parse_precedence PREC_ASSIGNMENT scope_state token remaining_tokens))
 
 (define (check_semicolon tokens)
   (and (pair? tokens)
