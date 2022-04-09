@@ -1,5 +1,5 @@
 (define (init_scope_state)
-  (cons #t ; can_assign
+  (cons '() ; can_assign a null value until the place where set
 	(cons 0 ; local_count
 	      (cons 0 ; depth
 		    '() )))) ; locals
