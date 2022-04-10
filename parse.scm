@@ -143,9 +143,12 @@
 
 (define (parse_identifier scope_state identifier_token
 			  following_token remaining_tokens)
-  (cons
-   (list "OP_GET_GLOBAL \"" (tokenChars identifier_token) "\"\n")
-   (cons following_token remaining_tokens) ) )
+  (let ( (can_assign (scope_state_can_assign scope_state)) )
+    (if (and can_assign (tokenMatch following_token 'TOKEN_EQUAL))
+	(error "re-assignment of globals not supported by this compiler")
+	(cons
+	 (list "OP_GET_GLOBAL \"" (tokenChars identifier_token) "\"\n")
+	 (cons following_token remaining_tokens) ) ) ) )
 
 (define
   PRECEDENCE_RULES
