@@ -161,6 +161,7 @@
 	(cons 'TOKEN_STAR        (list '()            parse_binary PREC_FACTOR))
 	(cons 'TOKEN_BANG        (list parse_unary    '()          PREC_NONE))
 	(cons 'TOKEN_BANG_EQUAL  (list '()          parse_binary PREC_EQUALITY))
+	(cons 'TOKEN_EQUAL       (list '() '() PREC_NONE))
 	(cons 'TOKEN_EQUAL_EQUAL (list '()          parse_binary PREC_EQUALITY))
 	(cons 'TOKEN_GREATER     (list '() parse_binary PREC_COMPARISON))
 	(cons 'TOKEN_GREATER_EQUAL (list '() parse_binary PREC_COMPARISON))
@@ -239,8 +240,13 @@
 		       precedence
 		       can_assign_adjusted_scope_state
 		       tokensaftprefix)) )
-		(cons (append prefixruleoutput (car infixresult))
-		      (cdr infixresult) ))
+		(if (and (scope_state_can_assign
+			  can_assign_adjusted_scope_state)
+			 (pair? (cdr infixresult)) ;; TOKEN_EOF would help
+			 (tokenMatch (cadr infixresult) 'TOKEN_EQUAL))
+		    (error "Invalid assignment target")
+		    (cons (append prefixruleoutput (car infixresult))
+			  (cdr infixresult)) ) )
 	      prefixruleresult))
 
 	;; if we're out of tokens, we just call the prefix rule and we're done
