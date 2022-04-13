@@ -11,3 +11,13 @@
 
 (define (scope_state_change_can_assign scope_state can_assign)
   (cons can_assign (cdr scope_state)) )
+
+(define (scope_state_change_depth scope_state new_depth)
+  (cons (scope_state_can_assign scope_state)
+	(cons (scope_state_local_count scope_state)
+	      (cons new_depth
+		    (scope_state_locals scope_state) ))))
+
+(define (scope_state_increment_depth scope_state)
+  (scope_state_change_depth scope_state
+			    (+ 1 (scope_state_depth scope_state) )))

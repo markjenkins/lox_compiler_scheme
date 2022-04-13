@@ -297,6 +297,8 @@
 (define (parse_statement scope_state token remaining_tokens)
   (cond ( (tokenMatch token 'TOKEN_PRINT)
 	  (parse_print_statement scope_state remaining_tokens) )
+	( (tokenMatch token 'TOKEN_LEFT_BRACE)
+	  (parse_block scope_state remaining_tokens) )
 	(else (parse_expression_statement scope_state token remaining_tokens))))
 
 (define (parse_variable scope_state expected_identifier_token error_msg)
@@ -336,3 +338,24 @@
   (cond ( (tokenMatch token 'TOKEN_VAR)
 	  (parse_var_declaration scope_state remaining_tokens))
 	( else (parse_statement scope_state token remaining_tokens))))
+
+(define (parse_block_loop scope_state initlooptokens)
+  (let blockloop ( (blockaccum '())
+		   (looptokens initlooptokens) )
+    (if (and (pair? looptokens) ; why we should have TOKEN_EOF
+	     (not (tokenMatch (car looptokens) 'TOKEN_RIGHT_BRACE)) )
+	(let ( (parse_declaration_result
+		(parse_declaration scope_state
+				   (car looptokens)
+				   (cdr looptokens)) ) )
+	  (blockloop (cons
+		      (car parse_declaration_result)
+		      blockaccum)
+		     (cdr parse_declaration_result) ) )
+	(cons (reverse blockaccum)
+	      (if (pair? looptokens)
+		  (cdr looptokens) ; drop TOKEN_RIGHT_BRACE
+		  (error "Expect '}' after block.") )))))
+
+(define (parse_block scope_state remaining_tokens)
+  (parse_block_loop (scope_state_increment_depth scope_state) remaining_tokens))
