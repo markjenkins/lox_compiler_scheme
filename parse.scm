@@ -308,7 +308,7 @@
 
 (define (parse_var_declaration scope_state remaining_tokens)
   (if (not (pair? remaining_tokens))
-      (error "token expected after print keyword")
+      (error "token expected after var keyword")
       (let ( (var_name (parse_variable
 			scope_state
 			(car remaining_tokens)
