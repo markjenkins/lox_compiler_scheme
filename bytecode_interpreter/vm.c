@@ -81,12 +81,16 @@ void push(VM * vm, Value * value){
   vm->stackTop = incrementValuePointer(vm->stackTop);
 }
 
+Value * peek_top(VM * vm){
+  return decrementValuePointer(vm->stackTop);
+}
+
 void toss_pop(VM * vm){
   if (vm->stackTop == vm->stack){
     fputs("stack underflow\n", stderr);
     return;
   }
-  Value * newStackTop = decrementValuePointer(vm->stackTop);
+  Value * newStackTop = peek_top(vm);
   vm->stackTop = newStackTop;
 }
 
@@ -95,7 +99,7 @@ void pop(VM * vm, Value * targetValue){
     fputs("stack underflow\n", stderr);
     return;
   }
-  Value * newStackTop = decrementValuePointer(vm->stackTop);
+  Value * newStackTop = peek_top(vm);
   memcpy(targetValue, newStackTop, sizeof(Value));
   vm->stackTop = newStackTop;
 }
@@ -237,6 +241,12 @@ int run_vm(VM * vm, Chunk * chunk){
       index = ip[0];
       v = bumpValuePointer(vm->stack, index);
       push(vm, v);
+    }
+    else if (instruction == OP_SET_LOCAL){
+      ip = ip + sizeof(char);
+      index = ip[0];
+      v = bumpValuePointer(vm->stack, index);
+      memcpy(v, peek_top(vm), sizeof(Value));
     }
     else if (instruction ==  OP_DEFINE_GLOBAL){
       ip = ip + sizeof(char);

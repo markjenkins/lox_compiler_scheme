@@ -160,8 +160,22 @@
 	;; otherwise do OP_GET_GLOBAL
 	(let ( (local_var_stack_slot
 		(stack_slot_var scope_state var_name) ) )
-	  (cond ( can_assign_and_eq_follows
-		  (error "local assignment not yet supported") )
+	  (cond ( (and can_assign_and_eq_follows (pair? remaining_tokens))
+		  (let* ( (parseexprresult
+			   (parse_expression
+			    scope_state
+			    (car remaining_tokens) ; token
+			    (cdr remaining_tokens)) )
+			  (parseexproutput (car parseexprresult))
+			  (parseexprafttokens (cdr parseexprresult)) )
+		    (cons
+		     (append parseexproutput
+			     (list "OP_SET_LOCAL "
+				   (number->string local_var_stack_slot)
+				   "\n") )
+		     parseexprafttokens)))
+		( (and can_assign_and_eq_follows (null? remaining_tokens) )
+		  (error "unexpected end of stream after =") )
 		( (= LOCAL_NON_EXIST_DEPTH local_var_stack_slot)
 		  global_var_return_value)
 		( else (cons
