@@ -21,9 +21,10 @@ Built-in functions with a fixed number of arguments:
  - cons, car, cdr
  - cadr, caddr, cddr, caddr
  - reverse
- - eq?, eqv?
+ - eq?, eqv?, equal?
  - symbol?
  - list->string, string->list
+ - number->string
  - char>=? , char<=?
  - assv, assv-ref
  - <= < > >=

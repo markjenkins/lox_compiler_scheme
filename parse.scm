@@ -143,12 +143,32 @@
 
 (define (parse_identifier scope_state identifier_token
 			  following_token remaining_tokens)
-  (let ( (can_assign (scope_state_can_assign scope_state)) )
-    (if (and can_assign (tokenMatch following_token 'TOKEN_EQUAL))
-	(error "re-assignment of globals not supported by this compiler")
-	(cons
-	 (list "OP_GET_GLOBAL \"" (tokenChars identifier_token) "\"\n")
-	 (cons following_token remaining_tokens) ) ) ) )
+  (let* ( (can_assign (scope_state_can_assign scope_state))
+	  (can_assign_and_eq_follows
+	   (and can_assign (tokenMatch following_token 'TOKEN_EQUAL)) )
+	  (var_name (tokenChars identifier_token))
+	  (global_var_return_value
+	   (cons
+	    (list "OP_GET_GLOBAL \"" var_name "\"\n")
+	    (cons following_token remaining_tokens)) ))
+    (if (scope_state_global scope_state)
+	(if can_assign_and_eq_follows
+	    (error "re-assignment of globals not supported by this compiler")
+	    global_var_return_value)
+	;; else a local
+	;; fixme, should actually lookup the local and
+	;; otherwise do OP_GET_GLOBAL
+	(let ( (local_var_stack_slot
+		(stack_slot_var scope_state var_name) ) )
+	  (cond ( can_assign_and_eq_follows
+		  (error "local assignment not yet supported") )
+		( (= LOCAL_NON_EXIST_DEPTH local_var_stack_slot)
+		  global_var_return_value)
+		( else (cons
+			(list "OP_GET_LOCAL "
+			      (number->string local_var_stack_slot)
+			      "\n")
+			(cons following_token remaining_tokens) )))))))
 
 (define
   PRECEDENCE_RULES
@@ -315,9 +335,12 @@
 			"Variable name expected after var declaration"))
 	     (tokens_after_identifier (cdr remaining_tokens)))
 	(cond ( (check_semicolon tokens_after_identifier)
-		(cons
-		 (list "OP_NIL" "\n" "OP_DEFINE_GLOBAL \"" var_name "\"\n")
-		 (cdr tokens_after_identifier)))
+		(cons var_name
+		      (cons (if (scope_state_global scope_state)
+				(list "OP_NIL" "\n" "OP_DEFINE_GLOBAL \""
+				      var_name "\"\n")
+				(list "OP_NIL" "\n") )
+			    (cdr tokens_after_identifier) )))
 	      ( (tokenMatch (car tokens_after_identifier) 'TOKEN_EQUAL)
 		(let ( (parseexprresult
 			 (parse_expression
@@ -325,34 +348,60 @@
 			  (cadr tokens_after_identifier) ; token
 			  (cddr tokens_after_identifier)
 			  ))
-			)
-		  (consume_semicolon_provide_next_state
-		   (cdr parseexprresult) ; tokens
-		   ;; output_list
-		   (append (car parseexprresult)
-			   (list "OP_DEFINE_GLOBAL \"" var_name "\"\n"))
-		   "semi colon expected after var declaration and assignment")))
+		       )
+		  (cons
+		   var_name
+		   (consume_semicolon_provide_next_state
+		    (cdr parseexprresult) ; tokens
+		    ;; output_list
+		    (if (scope_state_global scope_state)
+			(append (car parseexprresult)
+				(list "OP_DEFINE_GLOBAL \"" var_name "\"\n"))
+			(car parseexprresult) )
+		    "semi colon expected after var declaration and assignment"
+		    ))))
 	      (else (error "var form not supported")) ))))
 
+;;; parse_declaration returns two nested pairs
+;;; car of the result is any variable name if declared (otherwise #f)
+;;; cdr of the result is a pair in the standard form
+;;;   - car of which (cadr) is new additions to the output
+;;;   - cdr of which (cddr) is tokens remaining
 (define (parse_declaration scope_state token remaining_tokens)
   (cond ( (tokenMatch token 'TOKEN_VAR)
 	  (parse_var_declaration scope_state remaining_tokens))
-	( else (parse_statement scope_state token remaining_tokens))))
+	( else (cons #f (parse_statement scope_state token remaining_tokens)))))
+
+(define (n_op_pop n)
+  (let loop ( (popaccum '()) (count 0) )
+    (if (= n count)
+	popaccum
+	(loop (cons "OP_POP" (cons "\n" popaccum)) (+ 1 count)) )))
 
 (define (parse_block_loop scope_state initlooptokens)
-  (let blockloop ( (blockaccum '())
-		   (looptokens initlooptokens) )
+  (let blockloop ( (block_loop_scope_state scope_state)
+		   (blockaccum '())
+		   (looptokens initlooptokens)
+		   (new_local_var_count 0) )
     (if (and (pair? looptokens) ; why we should have TOKEN_EOF
 	     (not (tokenMatch (car looptokens) 'TOKEN_RIGHT_BRACE)) )
 	(let ( (parse_declaration_result
-		(parse_declaration scope_state
+		(parse_declaration block_loop_scope_state
 				   (car looptokens)
 				   (cdr looptokens)) ) )
-	  (blockloop (cons
-		      (car parse_declaration_result)
+	  (blockloop (add_local_var_to_scope_state
+		      block_loop_scope_state
+		     (car parse_declaration_result))
+		     (cons
+		      (cadr parse_declaration_result)
 		      blockaccum)
-		     (cdr parse_declaration_result) ) )
-	(cons (reverse blockaccum)
+		     (cddr parse_declaration_result)
+		     (+ new_local_var_count
+			(if (car parse_declaration_result)
+			    1
+			    0)) ))
+	(cons (append (reverse blockaccum)
+		      (n_op_pop new_local_var_count) )
 	      (if (pair? looptokens)
 		  (cdr looptokens) ; drop TOKEN_RIGHT_BRACE
 		  (error "Expect '}' after block.") )))))

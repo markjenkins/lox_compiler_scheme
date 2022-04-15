@@ -232,6 +232,12 @@ int run_vm(VM * vm, Chunk * chunk){
     else if (instruction == OP_POP){
       toss_pop(vm);
     }
+    else if (instruction == OP_GET_LOCAL){
+      ip = ip + sizeof(char);
+      index = ip[0];
+      v = bumpValuePointer(vm->stack, index);
+      push(vm, v);
+    }
     else if (instruction ==  OP_DEFINE_GLOBAL){
       ip = ip + sizeof(char);
       index = ip[0];

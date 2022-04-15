@@ -34,7 +34,7 @@
 		   parse_expression_top_level tokens)))))
 
 (define (parse_declaration_top_level token remaining_tokens)
-  (parse_declaration (init_scope_state) token remaining_tokens) )
+  (cdr (parse_declaration (init_scope_state) token remaining_tokens) ))
 
 (define (parse_and_compile_to_opcodes tokens)
   (append

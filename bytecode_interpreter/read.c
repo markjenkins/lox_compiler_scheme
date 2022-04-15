@@ -102,6 +102,9 @@ int read_opcode(FILE* in){
   else if ( 0==strcmp("OP_POP", inputbuffer) ){
     return OP_POP;
   }
+  else if ( 0==strcmp("OP_GET_LOCAL", inputbuffer) ){
+    return OP_GET_LOCAL;
+  }
   else if ( 0==strcmp("OP_DEFINE_GLOBAL", inputbuffer) ){
     return OP_DEFINE_GLOBAL;
   }
@@ -207,6 +210,15 @@ int read_file_into_chunk(FILE* in, Chunk * chunk, VM * vm){
       }
       constantIndex = addConstant(chunk, constValue);
       writeChunk(chunk, constantIndex);
+    }
+    else if ( (opcode_or_eof == OP_GET_LOCAL) ){
+      read_constant(in, constValue, vm);
+      if ( constValue->type != VAL_NUMBER){
+	fputs("operand expected as int\n", stderr);
+	return FALSE;
+      }
+      /* FIXME cast to char here. This may not work above 127 */
+      writeChunk(chunk, constValue->number);
     }
     opcode_or_eof = read_opcode(in);
   }
