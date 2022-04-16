@@ -43,7 +43,8 @@
   (eq? (tokenType token) type))
 
 (define (parse_grouping bracket_token following_token remaining_tokens)
-  (let* ( (parseexprresult (parse_expression following_token
+  (let* ( (parseexprresult (parse_expression #f ; scope_state fixme
+					     following_token
 					     remaining_tokens))
 	  (parseexproutput (car parseexprresult))
 	  (parseexprafttokens (cdr parseexprresult)) )
@@ -237,7 +238,7 @@
 		(prefixrulefunc token '() '())) )
 	  (cons (car prefixruleresult) '() ) ))))
 
-(define (parse_expression token remaining_tokens)
+(define (parse_expression scope_state token remaining_tokens)
   (parse_precedence PREC_ASSIGNMENT token remaining_tokens))
 
 (define (check_semicolon tokens)
@@ -252,7 +253,8 @@
 (define (parse_print_statement remaining_tokens)
   (if (not (pair? remaining_tokens))
       (error "token expected after print keyword")
-      (let* ( (parseexprresult (parse_expression (car remaining_tokens)
+      (let* ( (parseexprresult (parse_expression #f ; fix me scope state
+						 (car remaining_tokens)
 						 (cdr remaining_tokens)))
 	      (parseexproutput (car parseexprresult))
 	      (parseexprafttokens (cdr parseexprresult)) )
@@ -262,7 +264,8 @@
 	 "semi-colon expected after statement") ) ) )
 
 (define (parse_expression_statement token remaining_tokens)
-  (let* ( (parseexprresult (parse_expression token remaining_tokens))
+  (let* ( (parseexprresult (parse_expression #f ; fix me scope state
+					     token remaining_tokens))
 	  (parseexproutput (car parseexprresult))
 	  (parseexprafttokens (cdr parseexprresult)) )
     (consume_semicolon_provide_next_state
@@ -294,6 +297,7 @@
 	      ( (tokenMatch (car tokens_after_identifier) 'TOKEN_EQUAL)
 		(let ( (parseexprresult
 			 (parse_expression
+			  #f ; fix me scope_state
 			  (cadr tokens_after_identifier) ; token
 			  (cddr tokens_after_identifier)
 			  ))
@@ -306,7 +310,7 @@
 		   "semi colon expected after var declaration and assignment")))
 	      (else (error "var form not supported")) ))))
 
-(define (parse_declaration token remaining_tokens)
+(define (parse_declaration scope_state token remaining_tokens)
   (cond ( (tokenMatch token 'TOKEN_VAR)
 	  (parse_var_declaration remaining_tokens))
 	( else (parse_statement token remaining_tokens))))

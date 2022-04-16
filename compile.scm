@@ -20,15 +20,24 @@
 
 ;;; this file requires
 ;;;  - alt_unfold.scm
+;;;  - scopestate.scm
 ;;;  - parse.scm
 ;;;  - flatten.scm
+
+(define (parse_expression_top_level token remaining_tokens)
+  (parse_expression (init_scope_state) token remaining_tokens) )
 
 (define (parse_and_compile_expression_to_opcodes tokens)
   (flatten_nested_list
    (reverse (cons (list "OP_RETURN" "\n")
-		  (alt_unfold_right_pairtest_p parse_expression tokens)))))
+		  (alt_unfold_right_pairtest_p
+		   parse_expression_top_level tokens)))))
+
+(define (parse_declaration_top_level token remaining_tokens)
+  (parse_declaration (init_scope_state) token remaining_tokens) )
 
 (define (parse_and_compile_to_opcodes tokens)
   (append
-   (flatten_nested_list (alt_unfold_pairtest_p parse_declaration tokens))
+   (flatten_nested_list (alt_unfold_pairtest_p
+			 parse_declaration_top_level tokens))
    (list "OP_RETURN" "\n")))
