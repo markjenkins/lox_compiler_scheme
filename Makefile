@@ -1,8 +1,14 @@
-all: bytecode_interpreter compile_lox_expr_to_bytecode_concat.scm compile_lox_to_bytecode_concat.scm
+all: bytecode_interpreter compiler
 
-tests: all
+compiler: compile_lox_expr_to_bytecode_concat.scm compile_lox_to_bytecode_concat.scm
+
+compiler_tests: compiler
 	$(MAKE) -C tests tests
+
+bytecode_interpreter_tests: bytecode_interpreter
 	$(MAKE) -C bytecode_interpreter tests
+
+tests: compiler_tests bytecode_interpreter_tests
 
 include scm_concat_rule.mk
 
@@ -13,4 +19,4 @@ compile_lox_expr_to_bytecode_concat.scm: span_w_pair_state.scm srfi1.scm trie.sc
 bytecode_interpreter:
 	$(MAKE) -C $@
 
-.PHONY: tests bytecode_interpreter
+.PHONY: tests bytecode_interpreter compiler compiler_tests bytecode_interpreter_tests
