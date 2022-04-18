@@ -42,18 +42,30 @@
 (define (tokenMatch token type)
   (eq? (tokenType token) type))
 
+;;; Many of our parser functions return a pair consisting of the output so far
+;;; and the remaining tokens
+(define parse_result_output car)
+(define parse_result_remaining_tokens cdr)
+
+;;; some functions like parse_declaration parse_var_declaration
+;;; have an additional element to extract for the variable name
+(define parse_declaration_result_var_name car)
+(define parse_declaration_result_common_output cdr)
+(define parse_declaration_result_output cadr)
+(define parse_declaration_result_remaining_tokens cddr)
+
 (define (parse_grouping scope_state bracket_token following_token
 			remaining_tokens)
   (let* ( (parseexprresult (parse_expression scope_state
 					     following_token
 					     remaining_tokens))
-	  (parseexproutput (car parseexprresult))
-	  (parseexprafttokens (cdr parseexprresult)) )
+	  (parseexproutput (parse_result_output parseexprresult))
+	  (parseexprafttokens (parse_result_remaining_tokens parseexprresult)) )
     ;; this would be simpler if there were an EOF token
     (if (and (pair? parseexprafttokens)
 	     (tokenMatch (car parseexprafttokens) 'TOKEN_RIGHT_PAREN))
 	(cons parseexproutput
-	      (cdr parseexprafttokens))
+	      (parse_result_remaining_tokens parseexprafttokens))
 	(error ") token expected") ) ) )
 
 (define (parse_unary scope_state unary_token following_token remaining_tokens)
@@ -64,14 +76,14 @@
     ;; accumulated by parse_precedence + OP_NEGATE
     ;; second half of the pair is the list of remaining tokens not consumed
     (cons
-     (append (car parseprecresult)
+     (append (parse_result_output parseprecresult)
 	     (list (cond ( (eq? (tokenType unary_token) 'TOKEN_MINUS)
 			   "OP_NEGATE")
 			 ( (eq? (tokenType unary_token) 'TOKEN_BANG)
 			   "OP_NOT")
 			 ( else (error "unexpected unary token type") ))
 		   "\n"))
-     (cdr parseprecresult) ) ))
+     (parse_result_remaining_tokens parseprecresult) ) ))
 
 (define (add_newline_after_each_helper sofar iter)
   (if (null? iter) sofar
@@ -113,10 +125,10 @@
 	    scope_state
 	    following_token ; token
 	    remaining_tokens)) ; remaining_tokens
-	  (outputsofar (car parseprecedence_result))
+	  (outputsofar (parse_result_output parseprecedence_result))
 	  )
     (cons (append outputsofar (add_newline_after_each binary_opcodes))
-	  (cdr parseprecedence_result) ) ))
+	  (parse_result_remaining_tokens parseprecedence_result) ) ))
 
 (define (parse_string scope_state string_token following_token remaining_tokens)
   ;; return value is a pair consisting of
@@ -166,8 +178,9 @@
 			    scope_state
 			    (car remaining_tokens) ; token
 			    (cdr remaining_tokens)) )
-			  (parseexproutput (car parseexprresult))
-			  (parseexprafttokens (cdr parseexprresult)) )
+			  (parseexproutput (parse_result_output parseexprresult))
+			  (parseexprafttokens (parse_result_remaining_tokens
+					       parseexprresult)) )
 		    (cons
 		     (append parseexproutput
 			     (list "OP_SET_LOCAL "
@@ -247,9 +260,9 @@
 		  (second looptokens)   ; fail if we're out
 		  (cddr looptokens) ) ) ) ; fail if we're out
 	  (precedenceloop (cons
-			   (car infixcallresult)
+			   (parse_result_output infixcallresult)
 			   infixaccum)
-			  (cdr infixcallresult) ) )
+			  (parse_result_remaining_tokens infixcallresult) ) )
 	(cons (reverse infixaccum)
 	      looptokens) )) )
 
@@ -266,8 +279,9 @@
 				   token
 				   (car remaining_tokens)
 				   (cdr remaining_tokens) ))
-		(prefixruleoutput (car prefixruleresult))
-		(tokensaftprefix (cdr prefixruleresult)) )
+		(prefixruleoutput (parse_result_output prefixruleresult))
+		(tokensaftprefix (parse_result_remaining_tokens
+				  prefixruleresult)) )
 	  (if (pair? tokensaftprefix)
 	      (let ( (infixresult
 		      (parse_precedence_infix_loop
@@ -276,11 +290,14 @@
 		       tokensaftprefix)) )
 		(if (and (scope_state_can_assign
 			  can_assign_adjusted_scope_state)
-			 (pair? (cdr infixresult)) ;; TOKEN_EOF would help
-			 (tokenMatch (cadr infixresult) 'TOKEN_EQUAL))
+			 (pair? (parse_result_remaining_tokens infixresult)) ;; TOKEN_EOF would help
+			 (tokenMatch
+			  (car (parse_result_remaining_tokens infixresult))
+			  'TOKEN_EQUAL))
 		    (error "Invalid assignment target")
-		    (cons (append prefixruleoutput (car infixresult))
-			  (cdr infixresult)) ) )
+		    (cons (append prefixruleoutput
+				  (parse_result_output infixresult))
+			  (parse_result_remaining_tokens infixresult)) ) )
 	      prefixruleresult))
 
 	;; if we're out of tokens, we just call the prefix rule and we're done
@@ -291,7 +308,7 @@
 	(let ( (prefixruleresult
 		(prefixrulefunc scope_state ; note no change to can_assign
 				token '() '())) )
-	  (cons (car prefixruleresult) '() ) ))))
+	  (cons (parse_result_output prefixruleresult) '() ) ))))
 
 (define (parse_expression scope_state token remaining_tokens)
   (parse_precedence PREC_ASSIGNMENT scope_state token remaining_tokens))
@@ -311,8 +328,9 @@
       (let* ( (parseexprresult (parse_expression scope_state
 						 (car remaining_tokens)
 						 (cdr remaining_tokens)))
-	      (parseexproutput (car parseexprresult))
-	      (parseexprafttokens (cdr parseexprresult)) )
+	      (parseexproutput (parse_result_output parseexprresult))
+	      (parseexprafttokens (parse_result_remaining_tokens
+				   parseexprresult)) )
 	(consume_semicolon_provide_next_state
 	 parseexprafttokens
 	 (append parseexproutput (list "OP_PRINT" "\n"))
@@ -321,8 +339,8 @@
 (define (parse_expression_statement scope_state token remaining_tokens)
   (let* ( (parseexprresult (parse_expression scope_state
 					     token remaining_tokens))
-	  (parseexproutput (car parseexprresult))
-	  (parseexprafttokens (cdr parseexprresult)) )
+	  (parseexproutput (parse_result_output parseexprresult))
+	  (parseexprafttokens (parse_result_remaining_tokens parseexprresult)) )
     (consume_semicolon_provide_next_state
      parseexprafttokens
      (append parseexproutput (list "OP_POP" "\n"))
@@ -366,21 +384,27 @@
 		  (cons
 		   var_name
 		   (consume_semicolon_provide_next_state
-		    (cdr parseexprresult) ; tokens
+		    (parse_result_remaining_tokens parseexprresult) ; tokens
 		    ;; output_list
 		    (if (scope_state_global scope_state)
-			(append (car parseexprresult)
+			(append (parse_result_output parseexprresult)
 				(list "OP_DEFINE_GLOBAL \"" var_name "\"\n"))
-			(car parseexprresult) )
+			(parse_result_output parseexprresult) )
 		    "semi colon expected after var declaration and assignment"
 		    ))))
 	      (else (error "var form not supported")) ))))
 
-;;; parse_declaration returns two nested pairs
+;;; parse_declaration returns a pair that is different from
+;;; many of the other parse functions
 ;;; car of the result is any variable name if declared (otherwise #f)
-;;; cdr of the result is a pair in the standard form
-;;;   - car of which (cadr) is new additions to the output
-;;;   - cdr of which (cddr) is tokens remaining
+;;; cdr of the result is the more typical output of a parse function
+;;;
+;;; The functions
+;;;   - parse_declaration_result_var_name
+;;;   - parse_declaration_result_output
+;;;   - parse_declaration_result_remaining_tokens
+;;; are available to access all of the components from a
+;;; parse_declaration output
 (define (parse_declaration scope_state token remaining_tokens)
   (cond ( (tokenMatch token 'TOKEN_VAR)
 	  (parse_var_declaration scope_state remaining_tokens))
@@ -405,13 +429,16 @@
 				   (cdr looptokens)) ) )
 	  (blockloop (add_local_var_to_scope_state
 		      block_loop_scope_state
-		     (car parse_declaration_result))
-		     (cons
-		      (cadr parse_declaration_result)
-		      blockaccum)
-		     (cddr parse_declaration_result)
+		      (parse_declaration_result_var_name
+		       parse_declaration_result))
+		     (cons (parse_declaration_result_output
+			    parse_declaration_result)
+			   blockaccum)
+		     (parse_declaration_result_remaining_tokens
+		      parse_declaration_result)
 		     (+ new_local_var_count
-			(if (car parse_declaration_result)
+			(if (parse_declaration_result_var_name
+			     parse_declaration_result)
 			    1
 			    0)) ))
 	(cons (append (reverse blockaccum)
