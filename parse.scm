@@ -56,9 +56,10 @@
 
 (define (parse_grouping scope_state bracket_token following_token
 			remaining_tokens)
-  (let* ( (parseexprresult (parse_expression scope_state
-					     following_token
-					     remaining_tokens))
+  (let* ( (parseexprresult (parse_expression
+			    (scope_state_append_jumplab scope_state "Ge")
+			    following_token
+			    remaining_tokens))
 	  (parseexproutput (parse_result_output parseexprresult))
 	  (parseexprafttokens (parse_result_remaining_tokens parseexprresult)) )
     ;; this would be simpler if there were an EOF token
@@ -175,7 +176,7 @@
 	  (cond ( (and can_assign_and_eq_follows (pair? remaining_tokens))
 		  (let* ( (parseexprresult
 			   (parse_expression
-			    scope_state
+			    (scope_state_append_jumplab scope_state "Ie")
 			    (car remaining_tokens) ; token
 			    (cdr remaining_tokens)) )
 			  (parseexproutput (parse_result_output parseexprresult))
@@ -248,21 +249,23 @@
 
 (define (parse_precedence_infix_loop precedence scope_state initlooptokens)
   (let precedenceloop ( (infixaccum '())
-			(looptokens initlooptokens ))
+			(looptokens initlooptokens )
+			(infixLoopCount 1) )
     (if (and (pair? looptokens) ; why we should have TOKEN_EOF
 	     (<= precedence (parse_getPrecedenceRule (tokenType
 						      (car looptokens)))) )
 	(let ( (infixcallresult
 		( (parse_getInfixRule (tokenType
 				       (car looptokens)) )
-		  scope_state
+		  (scope_state_append_n_jumplab scope_state infixLoopCount)
 		  (car looptokens)
 		  (second looptokens)   ; fail if we're out
 		  (cddr looptokens) ) ) ) ; fail if we're out
 	  (precedenceloop (cons
 			   (parse_result_output infixcallresult)
 			   infixaccum)
-			  (parse_result_remaining_tokens infixcallresult) ) )
+			  (parse_result_remaining_tokens infixcallresult)
+			  (+ 1 infixLoopCount) ) )
 	(cons (reverse infixaccum)
 	      looptokens) )) )
 
@@ -275,7 +278,9 @@
 		 (scope_state_change_can_assign scope_state
 				    (<= precedence PREC_ASSIGNMENT)) )
 		(prefixruleresult (prefixrulefunc
-				   can_assign_adjusted_scope_state
+				   (scope_state_append_jumplab
+				    can_assign_adjusted_scope_state
+				    "Px")
 				   token
 				   (car remaining_tokens)
 				   (cdr remaining_tokens) ))
@@ -286,7 +291,9 @@
 	      (let ( (infixresult
 		      (parse_precedence_infix_loop
 		       precedence
-		       can_assign_adjusted_scope_state
+		       (scope_state_append_jumplab
+			can_assign_adjusted_scope_state
+			"Ix")
 		       tokensaftprefix)) )
 		(if (and (scope_state_can_assign
 			  can_assign_adjusted_scope_state)
@@ -325,9 +332,10 @@
 (define (parse_print_statement scope_state remaining_tokens)
   (if (not (pair? remaining_tokens))
       (error "token expected after print keyword")
-      (let* ( (parseexprresult (parse_expression scope_state
-						 (car remaining_tokens)
-						 (cdr remaining_tokens)))
+      (let* ( (parseexprresult (parse_expression
+				(scope_state_append_jumplab scope_state "e")
+				(car remaining_tokens)
+				(cdr remaining_tokens)))
 	      (parseexproutput (parse_result_output parseexprresult))
 	      (parseexprafttokens (parse_result_remaining_tokens
 				   parseexprresult)) )
@@ -337,8 +345,9 @@
 	 "semi-colon expected after statement") ) ) )
 
 (define (parse_expression_statement scope_state token remaining_tokens)
-  (let* ( (parseexprresult (parse_expression scope_state
-					     token remaining_tokens))
+  (let* ( (parseexprresult (parse_expression
+			    (scope_state_append_jumplab scope_state "Ex")
+			    token remaining_tokens))
 	  (parseexproutput (parse_result_output parseexprresult))
 	  (parseexprafttokens (parse_result_remaining_tokens parseexprresult)) )
     (consume_semicolon_provide_next_state
@@ -348,7 +357,8 @@
 
 (define (parse_statement scope_state token remaining_tokens)
   (cond ( (tokenMatch token 'TOKEN_PRINT)
-	  (parse_print_statement scope_state remaining_tokens) )
+	  (parse_print_statement (scope_state_append_jumplab scope_state "Pr")
+				 remaining_tokens) )
 	( (tokenMatch token 'TOKEN_LEFT_BRACE)
 	  (parse_block scope_state remaining_tokens) )
 	(else (parse_expression_statement scope_state token remaining_tokens))))
@@ -376,7 +386,7 @@
 	      ( (tokenMatch (car tokens_after_identifier) 'TOKEN_EQUAL)
 		(let ( (parseexprresult
 			 (parse_expression
-			  scope_state
+			  (scope_state_append_jumplab scope_state "e")
 			  (cadr tokens_after_identifier) ; token
 			  (cddr tokens_after_identifier)
 			  ))
