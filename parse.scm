@@ -360,7 +360,8 @@
 	  (parse_print_statement (scope_state_append_jumplab scope_state "Pr")
 				 remaining_tokens) )
 	( (tokenMatch token 'TOKEN_LEFT_BRACE)
-	  (parse_block scope_state remaining_tokens) )
+	  (parse_block (scope_state_append_jumplab scope_state "B")
+		       remaining_tokens) )
 	(else (parse_expression_statement scope_state token remaining_tokens))))
 
 (define (parse_variable scope_state expected_identifier_token error_msg)
@@ -435,13 +436,16 @@
   (let blockloop ( (block_loop_scope_state scope_state)
 		   (blockaccum '())
 		   (looptokens initlooptokens)
-		   (new_local_var_count 0) )
+		   (new_local_var_count 0)
+		   (blockloopcount 1) )
     (if (and (pair? looptokens) ; why we should have TOKEN_EOF
 	     (not (tokenMatch (car looptokens) 'TOKEN_RIGHT_BRACE)) )
 	(let ( (parse_declaration_result
-		(parse_declaration block_loop_scope_state
-				   (car looptokens)
-				   (cdr looptokens)) ) )
+		(parse_declaration
+		 (scope_state_append_n_jumplab
+		  block_loop_scope_state blockloopcount)
+		 (car looptokens)
+		 (cdr looptokens)) ) )
 	  (blockloop (add_local_var_to_scope_state
 		      block_loop_scope_state
 		      (parse_declaration_result_var_name
@@ -455,7 +459,8 @@
 			(if (parse_declaration_result_var_name
 			     parse_declaration_result)
 			    1
-			    0)) ))
+			    0))
+		     (+ 1 blockloopcount) ))
 	(cons (append (reverse blockaccum)
 		      (n_op_pop new_local_var_count) )
 	      (if (pair? looptokens)
