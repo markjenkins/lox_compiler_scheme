@@ -362,7 +362,7 @@
   (if (not (pair? remaining_tokens))
       (error "token expected after var keyword")
       (let ( (var_name (parse_variable
-			scope_state
+			(scope_state_append_jumplab scope_state "v")
 			(car remaining_tokens)
 			"Variable name expected after var declaration"))
 	     (tokens_after_identifier (cdr remaining_tokens)))
@@ -407,8 +407,13 @@
 ;;; parse_declaration output
 (define (parse_declaration scope_state token remaining_tokens)
   (cond ( (tokenMatch token 'TOKEN_VAR)
-	  (parse_var_declaration scope_state remaining_tokens))
-	( else (cons #f (parse_statement scope_state token remaining_tokens)))))
+	  (parse_var_declaration
+	   (scope_state_append_jumplab scope_state "V")
+	   remaining_tokens))
+	( else (cons #f (parse_statement
+			 (scope_state_append_jumplab scope_state "S")
+			 token
+			 remaining_tokens)))))
 
 (define (n_op_pop n)
   (let loop ( (popaccum '()) (count 0) )

@@ -25,7 +25,9 @@
 ;;;  - flatten.scm
 
 (define (parse_expression_top_level token remaining_tokens)
-  (parse_expression (init_scope_state) token remaining_tokens) )
+  (parse_expression
+   (scope_state_append_jumplab (init_scope_state) "E")
+   token remaining_tokens) )
 
 (define (parse_and_compile_expression_to_opcodes tokens)
   (flatten_nested_list
@@ -35,8 +37,9 @@
 
 (define (parse_declaration_top_level token remaining_tokens)
   (parse_declaration_result_common_output
-   (parse_declaration (init_scope_state) token remaining_tokens) ))
-
+   (parse_declaration
+    (scope_state_append_jumplab (init_scope_state) "D")
+    token remaining_tokens) ))
 (define (parse_and_compile_to_opcodes tokens)
   (append
    (flatten_nested_list (alt_unfold_pairtest_p

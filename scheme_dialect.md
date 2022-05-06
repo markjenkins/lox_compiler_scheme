@@ -14,6 +14,8 @@ Special forms and syntax I'm using:
  - and, or
  - cond-expand
  - use-modules (only when guile detected, not required)
+ - set! (with a comment noting a rewrite of loops in compile.scm could
+         make this unecessary)
 
 Built-in functions with a fixed number of arguments:
  - not
@@ -32,6 +34,7 @@ Built-in functions with a fixed number of arguments:
  - eof-object?
  - display
  - newline
+ - string-append
 
 Built-in functions with variable arguments
  - list, append

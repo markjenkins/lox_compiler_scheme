@@ -24,23 +24,54 @@
 ;;; Ported to Scheme by
 ;;; @author Mark Jenkins <mark@markjenkins.ca>
 
-(define (construct_scope_state can_assign local_count depth locals)
+(define (string-append-number s n)
+  (string-append s (number->string n)) )
+
+(define topjumpcounter 0)
+
+;;; This is the only place where we use set!, which adds an additional
+;;; requirement for minimal implementations.
+;;;
+;;; Technically this is avoidable, the loops in
+;;; parse_and_compile_expression_to_opcodes and
+;;; parse_and_compile_to_opcodes tokens from parse.scm
+;;; could keep track of the same
+;;;
+;;; The rest of the program (in parse.scm), we're going to build out the
+;;; jump labels based on the code path and loop iterations and not rely
+;;; on global state. The goal will be to ensure that all jump labels are
+;;; unique. In another compiler pass we will remove the jump labels and
+;;; replace the jump labels with relative offsets. Any integers put
+;; in the jump labels are not intended to reflect their relative location
+;;;
+;;; So, getting rid of this set! may just be a small patch
+(define (nexttopjumpcounter)
+  (set! topjumpcounter (+ 1 topjumpcounter))
+  topjumpcounter )
+
+(define (newtopjumplab)
+  (string-append-number "jmplab" (nexttopjumpcounter) ))
+
+(define (construct_scope_state can_assign jmplabprefix local_count depth locals)
   (cons can_assign
-	(cons local_count
-	      (cons depth
-		    locals ))))
+	(cons jmplabprefix
+	      (cons local_count
+		    (cons depth
+			  locals )))))
 
 (define (init_scope_state)
   (construct_scope_state
    '() ; can_assign a null value until the place where set
+   (newtopjumplab)
     0  ; local_count
     0  ; depth
     '() ))
 
 (define scope_state_can_assign car)
-(define scope_state_local_count cadr)
-(define scope_state_depth caddr)
-(define scope_state_locals cdddr)
+(define scope_state_jmplabprefix cadr)
+(define scope_state_local_count caddr)
+(define scope_state_depth cadddr)
+(define scope_state_locals cddddr)
 
 (define scope_state_local_var_name car)
 (define scope_state_local_depth cdr)
@@ -53,9 +84,22 @@
 (define (scope_state_change_can_assign scope_state can_assign)
   (cons can_assign (cdr scope_state)) )
 
+(define (scope_state_append_jumplab scope_state strappend)
+  (construct_scope_state (scope_state_can_assign scope_state)  ; can_assign
+			 (string-append
+			  (scope_state_jmplabprefix scope_state)
+			  strappend)                           ; jmplabprefix
+			 (scope_state_local_count scope_state) ; local_count
+			 (scope_state_depth scope_state)       ; depth
+			 (scope_state_locals scope_state) ))   ; locals
+
+(define (scope_state_append_n_jumplab scope_state n)
+  (scope_state_append_jumplab scope_state (number->string n)))
+
 (define (scope_state_change_depth scope_state new_depth)
   (construct_scope_state
    (scope_state_can_assign scope_state)  ;; can_assign
+   (scope_state_jmplabprefix scope_state) ;; jmplabprefix
    (scope_state_local_count scope_state) ;; local_count
    new_depth ;; depth
    (scope_state_locals scope_state) )) ;; locals
@@ -75,6 +119,13 @@
 
 (define (depth_var_defined scope_state var_match)
   (depth_var_defined_loop (scope_state_locals scope_state) var_match))
+
+(define (scope_state_get_locals_and_add_var scope_state var_name var_depth)
+  ;; outer pair is scope_state_locals being pre-pended
+  ;; inner pair is variable name and its depth
+  (cons
+   (cons var_name var_depth)
+   (scope_state_locals scope_state) ))
 
 (define (stack_slot_var scope_state var_match)
   (let loop ( (loop_scope_state_locals (scope_state_locals scope_state))
@@ -96,9 +147,10 @@
 	( else
 	  (construct_scope_state
 	   (scope_state_can_assign scope_state) ;; can_assign
+	   (scope_state_jmplabprefix scope_state) ;; jmplabprefix
 	   (+ 1 (scope_state_local_count scope_state)) ;; local_count
 	   (scope_state_depth scope_state) ;; depth
-	   (cons
-	    (cons var_name
-		  (- (scope_state_depth scope_state) 1))
-	    (scope_state_locals scope_state) ))))) ;;locals
+	   (scope_state_get_locals_and_add_var ;; locals
+	    scope_state
+	    var_name
+	    (- (scope_state_depth scope_state) 1) ) ))))
