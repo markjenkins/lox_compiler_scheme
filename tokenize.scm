@@ -23,6 +23,9 @@
 ;;;
 ;;; Ported to Scheme by
 ;;; @author Mark Jenkins <mark@markjenkins.ca>
+;;;
+;;; this file requires
+;;;  - charhandling.scm
 
 ;;; Single-character tokens.
 (define TOKEN_LEFT_PAREN 0)
@@ -104,19 +107,6 @@
      (#\< . (TOKEN_LESS_EQUAL . TOKEN_LESS) )
      (#\> . (TOKEN_GREATER_EQUAL . TOKEN_GREATER) )
      ))
-
-(define (isWhitespaceNotnewline c)
-  (or (eqv? #\tab c)
-      (eqv? #\linefeed c)
-      (eqv? #\space c)) )
-
-(define (isNewline c)
-  (eqv? #\newline c))
-
-(define (isWhitespace c)
-  (or (isWhitespaceNotnewline c)
-      (isNewline c)
-      ))
 
 (define (skipToNewlineOrEOF chars)
   (let ( (c (car chars) ) )
