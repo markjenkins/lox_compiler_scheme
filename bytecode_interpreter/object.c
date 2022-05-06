@@ -65,9 +65,7 @@ ObjString* copyString(char* chars, size_t length, VM * vm) {
 void printObject(Value * value){
   if( value->obj->type == OBJ_STRING){
     ObjString * s = value->obj;
-    fputs("\"", stdout);
     fputs(s->chars, stdout);
-    fputs("\"", stdout);
   }
   else{
     fputs("unsupported object type print request\n", stderr);
