@@ -24,11 +24,18 @@
 ;;; Ported to Scheme by
 ;;; @author Mark Jenkins <mark@markjenkins.ca>
 
+(define (construct_scope_state can_assign local_count depth locals)
+  (cons can_assign
+	(cons local_count
+	      (cons depth
+		    locals ))))
+
 (define (init_scope_state)
-  (cons '() ; can_assign a null value until the place where set
-	(cons 0 ; local_count
-	      (cons 0 ; depth
-		    '() )))) ; locals
+  (construct_scope_state
+   '() ; can_assign a null value until the place where set
+    0  ; local_count
+    0  ; depth
+    '() ))
 
 (define scope_state_can_assign car)
 (define scope_state_local_count cadr)
@@ -47,10 +54,11 @@
   (cons can_assign (cdr scope_state)) )
 
 (define (scope_state_change_depth scope_state new_depth)
-  (cons (scope_state_can_assign scope_state)
-	(cons (scope_state_local_count scope_state)
-	      (cons new_depth
-		    (scope_state_locals scope_state) ))))
+  (construct_scope_state
+   (scope_state_can_assign scope_state)  ;; can_assign
+   (scope_state_local_count scope_state) ;; local_count
+   new_depth ;; depth
+   (scope_state_locals scope_state) )) ;; locals
 
 (define (scope_state_increment_depth scope_state)
   (scope_state_change_depth scope_state
@@ -86,13 +94,11 @@
 	     (scope_state_depth scope_state) )
 	  (error "you can not re-define a local var in the same scope") )
 	( else
-	  (cons (scope_state_can_assign scope_state)
-		;; do we even need to count the locals when we are planning
-		;; to handle stack-depth > 256 with a different op_code
-		;; later on with a second pass compiler that replaces
-		;; opcodes using constants greater than 1 byte
-		(cons (+ 1 (scope_state_local_count scope_state))
-		      (cons (scope_state_depth scope_state)
-			    (cons (cons var_name
-					(- (scope_state_depth scope_state) 1))
-				  (scope_state_locals scope_state) )))))))
+	  (construct_scope_state
+	   (scope_state_can_assign scope_state) ;; can_assign
+	   (+ 1 (scope_state_local_count scope_state)) ;; local_count
+	   (scope_state_depth scope_state) ;; depth
+	   (cons
+	    (cons var_name
+		  (- (scope_state_depth scope_state) 1))
+	    (scope_state_locals scope_state) ))))) ;;locals
