@@ -215,6 +215,30 @@
 	   and_rhs_output
 	   (list and_failed_label ":" "\n") )
 	  after_and_rhs_remaining_tokens) ))
+
+(define (parse_or scope_state or_op_token following_token remaining_tokens)
+  (let* ((parse_or_rhs_result
+	   (parse_precedence
+	    PREC_OR
+	    (scope_state_append_jumplab scope_state "O")
+	    following_token remaining_tokens))
+	 (or_rhs_output (car parse_or_rhs_result))
+	 (after_or_rhs_remaining_tokens (cdr parse_or_rhs_result))
+	 (or_failed_label (string-append
+			   (scope_state_jmplabprefix scope_state)
+			   "OF"))
+	 (or_passed_label (string-append
+			    (scope_state_jmplabprefix scope_state)
+			    "OP") ) )
+    (cons (append
+	   (list "OP_JUMP_IF_FALSE" " " "@" or_failed_label "\n")
+	   (list "OP_JUMP" " " "@" or_passed_label "\n")
+	   (list or_failed_label ":" "\n")
+	   (list "OP_POP" "\n")
+	   or_rhs_output
+	   (list or_passed_label ":" "\n") )
+	  after_or_rhs_remaining_tokens) ))
+
 (define
   PRECEDENCE_RULES
   (list (cons 'TOKEN_LEFT_PAREN  (list parse_grouping '()          PREC_NONE))
@@ -237,6 +261,7 @@
 	(cons 'TOKEN_NUMERIC     (list  parse_number  '()          PREC_NONE))
 	(cons 'TOKEN_AND         (list  '()             parse_and  PREC_AND))
 	(cons 'TOKEN_FALSE       (list  parse_false   '()          PREC_NONE))
+	(cons 'TOKEN_OR          (list  '()             parse_or   PREC_OR))
 	(cons 'TOKEN_NIL         (list  parse_nil     '()          PREC_NONE))
 	(cons 'TOKEN_TRUE        (list  parse_true    '()          PREC_NONE))
 	))
