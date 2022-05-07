@@ -198,6 +198,23 @@
 			      "\n")
 			(cons following_token remaining_tokens) )))))))
 
+(define (parse_and scope_state and_op_token following_token remaining_tokens)
+  (let* ((parse_and_rhs_result
+	   (parse_precedence
+	    PREC_AND
+	    (scope_state_append_jumplab scope_state "A")
+	    following_token remaining_tokens))
+	 (and_rhs_output (car parse_and_rhs_result))
+	 (after_and_rhs_remaining_tokens (cdr parse_and_rhs_result))
+	 (and_failed_label (string-append
+			    (scope_state_jmplabprefix scope_state)
+			    "AF") ) )
+    (cons (append
+	   (list "OP_JUMP_IF_FALSE" " " "@" and_failed_label "\n"
+		 "OP_POP" "\n")
+	   and_rhs_output
+	   (list and_failed_label ":" "\n") )
+	  after_and_rhs_remaining_tokens) ))
 (define
   PRECEDENCE_RULES
   (list (cons 'TOKEN_LEFT_PAREN  (list parse_grouping '()          PREC_NONE))
@@ -218,6 +235,7 @@
 	(cons 'TOKEN_IDENTIFIER  (list  parse_identifier '()         PREC_NONE))
 	(cons 'TOKEN_STRING      (list  parse_string  '()          PREC_NONE))
 	(cons 'TOKEN_NUMERIC     (list  parse_number  '()          PREC_NONE))
+	(cons 'TOKEN_AND         (list  '()             parse_and  PREC_AND))
 	(cons 'TOKEN_FALSE       (list  parse_false   '()          PREC_NONE))
 	(cons 'TOKEN_NIL         (list  parse_nil     '()          PREC_NONE))
 	(cons 'TOKEN_TRUE        (list  parse_true    '()          PREC_NONE))
