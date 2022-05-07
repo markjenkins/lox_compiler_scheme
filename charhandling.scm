@@ -18,6 +18,9 @@
 ;;; FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 ;;; IN THE SOFTWARE.
 
+;;; this file requires
+;;;  - span_w_pair_state.scm
+
 (define (isWhitespaceNotnewline c)
   (or (eqv? #\tab c)
       (eqv? #\linefeed c)
@@ -90,3 +93,6 @@
 (define (endswithchar teststr testchr)
   (eqv? (car (reverse (string->list teststr))) ; reverse and get the first char
 	testchr))
+
+(define (drop_trailing_char strtomod)
+  (list->string (reverse (cdr (reverse (string->list strtomod))))))

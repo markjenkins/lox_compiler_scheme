@@ -28,7 +28,7 @@ Built-in functions with a fixed number of arguments:
  - list->string, string->list
  - number->string
  - char>=? , char<=?
- - assv, assv-ref
+ - assv, assv-ref, assoc, assoc-ref
  - <= < > >=
  - read-char
  - eof-object?
