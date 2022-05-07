@@ -117,6 +117,12 @@ int read_opcode(FILE* in){
   else if ( 0==strcmp("OP_NOT", inputbuffer) ){
     return OP_NOT;
   }
+  else if ( 0==strcmp("OP_JUMP", inputbuffer) ){
+    return OP_JUMP;
+  }
+  else if ( 0==strcmp("OP_JUMP_IF_FALSE", inputbuffer) ){
+    return OP_JUMP_IF_FALSE;
+  }
   fputs("opcode ", stderr);
   fputs(inputbuffer, stderr);
   fputs(" not recognized\n", stderr);
@@ -200,6 +206,8 @@ int read_file_into_chunk(FILE* in, Chunk * chunk, VM * vm){
   Value * constValue = malloc_via_reallocate(sizeof(Value));
   size_t constantIndex;
   int opcode_or_eof = read_opcode(in);
+  long multibyte_int;
+
   while (opcode_or_eof != EOF){
     /* write the bytecode */
     writeChunk(chunk, opcode_or_eof);
@@ -213,6 +221,25 @@ int read_file_into_chunk(FILE* in, Chunk * chunk, VM * vm){
       }
       constantIndex = addConstant(chunk, constValue);
       writeChunk(chunk, constantIndex);
+    }
+    else if ( (opcode_or_eof == OP_JUMP) ||
+	      (opcode_or_eof == OP_JUMP_IF_FALSE) ){
+      read_constant(in, constValue, vm);
+      if ( constValue->type != VAL_NUMBER){
+	fputs("operand expected as int\n", stderr);
+	return FALSE;
+      }
+      multibyte_int = constValue->number;
+      /* Big endian approach to bytecode, first byte is most significant
+	 value
+	 8-bits per byte assumed
+	 FIXME warning, this is a cast to the signed type char, testing
+	 is required to see that values > 127 are not a problem
+	 this comment also applies to the 0xFF mask
+	 brackets are import to ensure the cast happens last
+      */
+      writeChunk(chunk, (multibyte_int>>8)); /* Most significant byte (MSB) */
+      writeChunk(chunk, (multibyte_int & 0xFF)); /* LSB */
     }
     else if ( (opcode_or_eof == OP_GET_LOCAL) ||
 	      (opcode_or_eof == OP_SET_LOCAL) ){
