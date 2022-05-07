@@ -320,6 +320,12 @@
 (define (parse_expression scope_state token remaining_tokens)
   (parse_precedence PREC_ASSIGNMENT scope_state token remaining_tokens))
 
+(define (toss_expected_token tokens expected_token error_msg)
+  (if (and (pair? tokens)
+	   (tokenMatch (car tokens) expected_token) )
+      (cdr tokens)
+      (error error_msg) ))
+
 (define (check_semicolon tokens)
   (and (pair? tokens)
        (tokenMatch (car tokens) 'TOKEN_SEMICOLON)))
@@ -344,6 +350,50 @@
 	 (append parseexproutput (list "OP_PRINT" "\n"))
 	 "semi-colon expected after statement") ) ) )
 
+(define (parse_if_statement scope_state remaining_tokens)
+  (let* ( (remaining_tokens_aft_paren
+	   (toss_expected_token remaining_tokens 'TOKEN_LEFT_PAREN
+				"Expect ( after if.") )
+	  (parseexprresult (parse_expression
+			    (scope_state_append_jumplab scope_state "e")
+			    (car remaining_tokens_aft_paren)
+			    (cdr remaining_tokens_aft_paren) ))
+	  (parseexproutput (parse_result_output parseexprresult))
+	  (parseexprafttokens (parse_result_remaining_tokens
+			       parseexprresult))
+	  (tokens_aft_close_paren
+	   (toss_expected_token parseexprafttokens 'TOKEN_RIGHT_PAREN
+				"Expect ) after condition in if."))
+	  (first_token_after_close_paren
+	   (if (pair? tokens_aft_close_paren) ; should have TOKEN_EOF..
+	       (car tokens_aft_close_paren)
+	       (error "premature end of input") ))
+	  ;; relying on order of operation here to be sure cdr is avail
+	  (remaining_tokens_after_close_paren (cdr tokens_aft_close_paren))
+	  (parsestatementresult (parse_statement
+				 (scope_state_append_jumplab scope_state "S")
+				 first_token_after_close_paren
+				 remaining_tokens_after_close_paren))
+	  (parsestatementoutput (car parsestatementresult))
+	  (tokens_after_statement (cdr parsestatementresult))
+	  (after_if_jump_label (string-append
+				(scope_state_jmplabprefix scope_state)
+				"aftS"))
+	  (after_else_jump_label (string-append
+				  (scope_state_jmplabprefix scope_state)
+				  "postEl")) )
+    (cons
+     (append
+      parseexproutput
+      (list "OP_JUMP_IF_FALSE" " " (string-append "@" after_if_jump_label) "\n")
+      (list "OP_POP" "\n") ; pop if expression from stack when condition true
+      parsestatementoutput
+      (list "OP_JUMP" " @" after_else_jump_label "\n")
+      (list (string-append after_if_jump_label ":\n"))
+      (list "OP_POP" "\n") ; pop if expression from stack when condition false
+      (list (string-append after_else_jump_label) ":\n") )
+     tokens_after_statement) ))
+
 (define (parse_expression_statement scope_state token remaining_tokens)
   (let* ( (parseexprresult (parse_expression
 			    (scope_state_append_jumplab scope_state "Ex")
@@ -359,6 +409,9 @@
   (cond ( (tokenMatch token 'TOKEN_PRINT)
 	  (parse_print_statement (scope_state_append_jumplab scope_state "Pr")
 				 remaining_tokens) )
+	( (tokenMatch token 'TOKEN_IF)
+	  (parse_if_statement (scope_state_append_jumplab scope_state "I")
+			      remaining_tokens) )
 	( (tokenMatch token 'TOKEN_LEFT_BRACE)
 	  (parse_block (scope_state_append_jumplab scope_state "B")
 		       remaining_tokens) )
