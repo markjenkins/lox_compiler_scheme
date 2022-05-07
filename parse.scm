@@ -350,6 +350,16 @@
 	 (append parseexproutput (list "OP_PRINT" "\n"))
 	 "semi-colon expected after statement") ) ) )
 
+(define (parse_possible_else_clause scope_state tokens_after_if_statement)
+  (if (or (null? tokens_after_if_statement)
+	  (not (tokenMatch (car tokens_after_if_statement) 'TOKEN_ELSE)) )
+      (cons '() tokens_after_if_statement)
+      (if (pair? (cdr tokens_after_if_statement))
+	  (parse_statement (scope_state_append_jumplab scope_state "elS")
+			   (cadr tokens_after_if_statement)  ; token
+			   (cddr tokens_after_if_statement)) ; remaining_tokens
+	  (error "else statement without tokens that follow") )))
+
 (define (parse_if_statement scope_state remaining_tokens)
   (let* ( (remaining_tokens_aft_paren
 	   (toss_expected_token remaining_tokens 'TOKEN_LEFT_PAREN
@@ -381,7 +391,11 @@
 				"aftS"))
 	  (after_else_jump_label (string-append
 				  (scope_state_jmplabprefix scope_state)
-				  "postEl")) )
+				  "postEl"))
+	  (parse_else_clause_result (parse_possible_else_clause
+				     scope_state tokens_after_statement))
+	  (else_statement_output (car parse_else_clause_result))
+	  (tokens_after_else_statement (cdr parse_else_clause_result)) )
     (cons
      (append
       parseexproutput
@@ -391,8 +405,9 @@
       (list "OP_JUMP" " @" after_else_jump_label "\n")
       (list (string-append after_if_jump_label ":\n"))
       (list "OP_POP" "\n") ; pop if expression from stack when condition false
+      else_statement_output ; may be an empty list, but append can handle that
       (list (string-append after_else_jump_label) ":\n") )
-     tokens_after_statement) ))
+     tokens_after_else_statement) ))
 
 (define (parse_expression_statement scope_state token remaining_tokens)
   (let* ( (parseexprresult (parse_expression

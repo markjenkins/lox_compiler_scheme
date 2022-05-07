@@ -1,0 +1,4 @@
+if (false)
+   print "never happens";
+else
+   print "false happens";
