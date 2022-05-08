@@ -123,6 +123,9 @@ int read_opcode(FILE* in){
   else if ( 0==strcmp("OP_JUMP_IF_FALSE", inputbuffer) ){
     return OP_JUMP_IF_FALSE;
   }
+  else if ( 0==strcmp("OP_LOOP", inputbuffer) ){
+    return OP_LOOP;
+  }
   fputs("opcode ", stderr);
   fputs(inputbuffer, stderr);
   fputs(" not recognized\n", stderr);
@@ -223,7 +226,8 @@ int read_file_into_chunk(FILE* in, Chunk * chunk, VM * vm){
       writeChunk(chunk, constantIndex);
     }
     else if ( (opcode_or_eof == OP_JUMP) ||
-	      (opcode_or_eof == OP_JUMP_IF_FALSE) ){
+	      (opcode_or_eof == OP_JUMP_IF_FALSE) ||
+	      (opcode_or_eof == OP_LOOP) ){
       read_constant(in, constValue, vm);
       if ( constValue->type != VAL_NUMBER){
 	fputs("operand expected as int\n", stderr);

@@ -314,14 +314,28 @@ int run_vm(VM * vm, Chunk * chunk){
       printValue(operand1);
       fputs("\n", stdout);
     }
-    else if (instruction == OP_JUMP || instruction == OP_JUMP_IF_FALSE){
+    else if (instruction == OP_JUMP ||
+	     instruction == OP_JUMP_IF_FALSE ||
+	     instruction == OP_LOOP){
       ip = ip + sizeof(char);
       /* jump size two bytes, big endian byte order */
       index = (ip[0])<<8; /* most significant byte */
       ip = ip + sizeof(char);
       index = index | ip[0]; /* append least significant byte */
 
-      if (instruction == OP_JUMP || isFalsey(peek_top(vm)) ){
+      if (instruction == OP_LOOP){
+	/* + 1 [sizeof(char)] to put us on the next opcode */
+	ip = (ip + sizeof(char) ) - index;
+	/* note ip is now where it needs to be.
+	   we use this continue statement to skip the ip = ip+1 at the bottom of
+	   this while loop. We could also just skip the  + sizeof(char) [1]
+	   above and let that part execute.
+	   Though in this case, I'm glad to avoid any chance of ip temporarilly
+	   pointing somewhere inappropriate.
+	*/
+	continue;
+      }
+      else if (instruction == OP_JUMP || isFalsey(peek_top(vm)) ){
 	ip = ip + index + sizeof(char); /* + 1 to put ip at next address */
 	/* note ip is now where it needs to be.
 	   we use this continue statement to skip the ip = ip+1 at the bottom of

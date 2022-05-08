@@ -99,6 +99,14 @@
 		(list opcode " " (number->string rel_offset) "\n")
 		(error
 		 "OP_JUMP should be forward at least 1, not 0 or back") )))
+	( (equal? opcode "OP_LOOP")
+	  (let* ((dest_offset
+		  (resolve_jump_symbol_operand (second line_split) labels))
+		 (rel_offset (- (+ 3 bytecode_offset) dest_offset)) )
+	    (if (> rel_offset 3)
+		(list opcode " " (number->string rel_offset) "\n")
+		(error
+		 "OP_LOOP should go back at least 4, not less or forward") )))
 	( else (list current_line "\n") ) ) )
 
 (define (resolve_jump_labels lines labels)

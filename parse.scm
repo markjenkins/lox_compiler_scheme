@@ -452,6 +452,52 @@
       (list (string-append after_else_jump_label) ":\n") )
      tokens_after_else_statement) ))
 
+(define (parse_while_statement scope_state remaining_tokens)
+  (let* ( (remaining_tokens_aft_paren
+	   (toss_expected_token remaining_tokens 'TOKEN_LEFT_PAREN
+				"Expect ( after while.") )
+	  (parseexprresult (parse_expression
+			    (scope_state_append_jumplab scope_state "e")
+			    (car remaining_tokens_aft_paren)
+			    (cdr remaining_tokens_aft_paren) ))
+	  (parseexproutput (parse_result_output parseexprresult))
+	  (parseexprafttokens (parse_result_remaining_tokens
+			       parseexprresult))
+	  (tokens_aft_close_paren
+	   (toss_expected_token parseexprafttokens 'TOKEN_RIGHT_PAREN
+				"Expect ) after condition in while."))
+	  (first_token_after_close_paren
+	   (if (pair? tokens_aft_close_paren) ; should have TOKEN_EOF..
+	       (car tokens_aft_close_paren)
+	       (error "premature end of input") ))
+	  ;; relying on order of operation here to be sure cdr is avail
+	  (remaining_tokens_after_close_paren (cdr tokens_aft_close_paren))
+	  (parsestatementresult (parse_statement
+				 (scope_state_append_jumplab scope_state "S")
+				 first_token_after_close_paren
+				 remaining_tokens_after_close_paren))
+	  (parsestatementoutput (car parsestatementresult))
+	  (tokens_after_statement (cdr parsestatementresult))
+	  (start_while_jump_label (string-append
+				   (scope_state_jmplabprefix scope_state)
+				   "stW"))
+	  (after_while_jump_label (string-append
+				(scope_state_jmplabprefix scope_state)
+				"aftS")) )
+    (cons
+     (append
+      (list start_while_jump_label ":" "\n")
+      parseexproutput
+      (list "OP_JUMP_IF_FALSE" " "
+	    (string-append "@" after_while_jump_label)
+	    "\n")
+      (list "OP_POP" "\n") ; pop while expression from stack when condition true
+      parsestatementoutput
+      (list "OP_LOOP" " " "@" start_while_jump_label "\n")
+      (list (string-append after_while_jump_label ":\n"))
+      (list "OP_POP" "\n") ) ; pop while expression from stack when cond false
+     tokens_after_statement) ))
+
 (define (parse_expression_statement scope_state token remaining_tokens)
   (let* ( (parseexprresult (parse_expression
 			    (scope_state_append_jumplab scope_state "Ex")
@@ -470,6 +516,9 @@
 	( (tokenMatch token 'TOKEN_IF)
 	  (parse_if_statement (scope_state_append_jumplab scope_state "I")
 			      remaining_tokens) )
+	( (tokenMatch token 'TOKEN_WHILE)
+	  (parse_while_statement (scope_state_append_jumplab scope_state "W")
+				 remaining_tokens) )
 	( (tokenMatch token 'TOKEN_LEFT_BRACE)
 	  (parse_block (scope_state_append_jumplab scope_state "B")
 		       remaining_tokens) )
