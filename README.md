@@ -11,8 +11,23 @@ Currently compiles these features to plain text opcodes (assembler):
  * nil
  * true, false
  * equality, inequality, comparison operators
+ * print statement
+ * variable declaration statements (global and local)
+ * local variable re-assignments
+ * curly bracket {} block scope statements and block scope for local vars
+ * boolean negation, logical AND "and" and OR "or"
+ * if, if-else and while statements
 
-A bytecode interpreter works through those and prints the expression value.
+
+This gets me functionally to chapter 23 in the book, but without global
+re-assignment and for loops.
+
+Additional major gaps:
+ * Hash tables and string interning (chapter 20), skipped over for now
+ * Functions (chapter 24)
+ * Garbage collection (chapter 26)
+
+A bytecode interpreter works through the opcodes produced by the compiler and prints the expression value or executes the statements. (both modes available)
 
 Git tags will indicate the book chapter that I will consider myself to be functionally on par with.
 
@@ -25,6 +40,23 @@ Mainly I'm doing this as an exercise to motivate a greater understanding of Sche
 All together, this should create a Lox implementation that's [bootstrappable](https://bootstrappable.org) . Potentially this will open up Lox as an option for bootstraping other languages. (see Ben Hoyt's [blog post](https://benhoyt.com/writings/loxlox/) and [code](https://github.com/benhoyt/loxlox))
 
 Furthermore, this should provide a really good test case for compatible Scheme implementations.
+
+Upcoming plans:
+ * global function definitions (no closures)
+ * no classes, but a basic, built-in pair type with accessible first and second attributes
+```
+class pair {
+  init(first, second){
+    this.first = first;
+    this.second = second;
+  }
+}
+p = pair(1, pair(2, nil));
+p.second.first; // 2
+```
+ * a basic method of input with chains of pair() at the code heading holding characters, lines, or tokens from an external tokenizer
+
+Even without global re-assignment. for loops, classes or function closures, the current (chapter 23 progress) + the above should be enough to have a mini-language bootstrap-sub-lox (bslox), a simplified Lox sub-variant which will be powerful enough to implement further compilers and bootstrap tools. What makes this an appealing language is having memory safety and type mixing. 
 
 # Dependencies for bytecode_interpreter
 
