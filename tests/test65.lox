@@ -1,0 +1,11 @@
+// from craftinginterpreters/test/while/syntax.lox
+// modified to use local scope for var c instead of global
+
+// Single-expression body.
+{
+    var c = 0;
+    while (c < 3) print c = c + 1;
+}
+// expect: 1
+// expect: 2
+// expect: 3
