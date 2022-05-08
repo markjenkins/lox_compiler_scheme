@@ -13,8 +13,6 @@ M2-Planet \
     -f M2libc/stdlib.c \
     -f M2libc/stdio.c \
     -f M2libc/string.c \
-    -f M2libc/bootstrappable.h \
-    -f M2libc/bootstrappable.c \
     -f common.h \
     -f simplerealloc.c \
     -f object.h \
