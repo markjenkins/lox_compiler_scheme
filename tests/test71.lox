@@ -1,0 +1,4 @@
+// from craftinginterpreters/test/precedence.lox
+
+// < has higher precedence than ==.
+print false == 2 < 1; // expect: true

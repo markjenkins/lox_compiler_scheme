@@ -1,0 +1,4 @@
+// from craftinginterpreters/test/precedence.lox
+
+// * has higher precedence than -.
+print 20 - 3 * 4; // expect: 8

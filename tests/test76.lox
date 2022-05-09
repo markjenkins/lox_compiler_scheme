@@ -1,0 +1,4 @@
+// from craftinginterpreters/test/precedence.lox
+
+// Using () for grouping.
+print (2 * (6 - (2 + 2))); // expect: 4
