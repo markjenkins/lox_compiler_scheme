@@ -1,6 +1,6 @@
 SCM=guile
 
-LOX_COMPILE_AND_EXPR_EVAL_TEST_NUMS = $(shell seq 4 39)
+LOX_COMPILE_AND_EXPR_EVAL_TEST_NUMS = $(shell seq 4 39) 82
 LOX_EXPR_COMPILE_TESTS = $(foreach i,$(LOX_COMPILE_AND_EXPR_EVAL_TEST_NUMS),test$(i).output.txt)
 
 LOX_COMPILE_AND_DECL_EVAL_TEST_NUMS = $(shell seq 40 55) $(shell seq 67 79) 81
