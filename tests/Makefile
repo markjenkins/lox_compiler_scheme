@@ -3,10 +3,10 @@ SCM=guile
 LOX_COMPILE_AND_EXPR_EVAL_TEST_NUMS = $(shell seq 4 39)
 LOX_EXPR_COMPILE_TESTS = $(foreach i,$(LOX_COMPILE_AND_EXPR_EVAL_TEST_NUMS),test$(i).output.txt)
 
-LOX_COMPILE_AND_DECL_EVAL_TEST_NUMS = $(shell seq 40 55) $(shell seq 78 79)
+LOX_COMPILE_AND_DECL_EVAL_TEST_NUMS = $(shell seq 40 55) $(shell seq 67 79)
 LOX_DECL_COMPILE_TESTS = $(foreach i,$(LOX_COMPILE_AND_DECL_EVAL_TEST_NUMS),test$(i).decl_output.txt)
 
-LOX_COMPILE_LINK_AND_DECL_EVAL_TEST_NUMS = $(shell seq 56 77)
+LOX_COMPILE_LINK_AND_DECL_EVAL_TEST_NUMS = $(shell seq 56 66)
 LOX_DECL_LINK_COMPILE_INTERMEDIATES = $(foreach i,$(LOX_COMPILE_LINK_AND_DECL_EVAL_TEST_NUMS),test$(i).intermed_output.txt)
 LOX_DECL_LINK_COMPILE_TESTS = $(foreach i,$(LOX_COMPILE_LINK_AND_DECL_EVAL_TEST_NUMS),test$(i).linked_output.txt)
 
