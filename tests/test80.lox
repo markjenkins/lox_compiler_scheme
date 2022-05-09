@@ -1,0 +1,9 @@
+// from craftinginterpreters/test/block/empty.lox
+
+{} // By itself.
+
+// In a statement.
+if (true) {}
+if (false) {} else {}
+
+print "ok"; // expect: ok
