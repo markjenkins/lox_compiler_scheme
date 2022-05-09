@@ -26,7 +26,9 @@
 	      (if (pair? fl)
 		  (flatlloop (cdr fl) (cons (car fl) innerloopaccum) )
 		  (flatten_nested_list_inner (cdr l) innerloopaccum))))
-	  (flatten_nested_list_inner (cdr l) (cons (car l) accum)))
+	  (if (null? (car l))
+	      (flatten_nested_list_inner (cdr l) accum)
+	      (flatten_nested_list_inner (cdr l) (cons (car l) accum))))
       accum))
 
 (define (flatten_nested_list l)
