@@ -32,6 +32,7 @@
 #include "linkedstack.h"
 #include "chunk.h"
 #include "vm.h"
+#include "freeobjects.h"
 #include "memory.h"
 #include "copystring.h"
 #include "common.h"
