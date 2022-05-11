@@ -62,6 +62,7 @@ void initVM(VM * vm);
 void freeVM(VM * vm);
 Value * soft_push(VM * vm);
 void push(VM * vm, Value * value);
+void toss_pop(VM * vm);
 void pop(VM * vm, Value * targetValue);
 int run_vm(VM * vm, Chunk * chunk);
 int interpret(VM * vm, Chunk * chunk);

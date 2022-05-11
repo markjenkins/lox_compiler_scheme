@@ -32,7 +32,8 @@
 
 /* caller is just responsible for malloc of vm and chunk */
 int common_vm_chunk_init_and_run(VM * vm, Chunk * chunk,
-				     int exit_on_return){
+                                 int exit_on_return,
+                                 int save_expr_result_on_stack){
     initVM(vm);
     initChunk(chunk);
     if (!read_file_into_chunk(stdin, chunk, vm)){
@@ -49,5 +50,22 @@ int common_vm_chunk_init_and_run(VM * vm, Chunk * chunk,
     if (result!=INTERPRET_OK){
       return EXIT_FAILURE;
     }
+
+    /* when evaluating an expression (vs declarations), the result will be on
+       the top of the stack. Hold on to it in those cases */
+    if (save_expr_result_on_stack){
+      pop(vm, vm->operand1);
+    }
+
+    /* remove dummy value on stack in liu of top-level function
+       See comments in interpret() from vm.c */
+    toss_pop(vm);
+
+    /* put expression result back on the stack now that the dummy value is
+       gone. The main() function in exprprintmain.c will pick up on it */
+    if (save_expr_result_on_stack){
+      push(vm, vm->operand1);
+    }
+
     return EXIT_SUCCESS;
 }

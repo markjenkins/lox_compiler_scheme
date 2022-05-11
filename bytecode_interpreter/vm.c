@@ -449,5 +449,21 @@ int run_vm(VM * vm, Chunk * chunk){
 }
 
 int interpret(VM * vm, Chunk * chunk){
+  /* Every time a function is called, the function itself is put on the
+     stack (index 0).
+
+     All local variables are after that, e.g. first local variable
+     is index 1, not 0.
+
+     To help keep the compiler and interpreter simple, the top level ("script")
+     is also going to be treated as a function and called in that same manner.
+
+     Right now we don't have function objects yet, so we push a dummy nil
+     that OP_RETURN we will pop off after in
+     common_vm_chunk_init_and_run() (commonmain.c) after it calls interpret()
+   */
+  Value * dummy_value = soft_push(vm);
+  dummy_value->type = VAL_NIL;
+
   return run_vm(vm, chunk);
 }

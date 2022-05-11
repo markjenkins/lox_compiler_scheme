@@ -38,7 +38,7 @@ int main(int argc, char** argv){
   VM * vm = malloc_via_reallocate(sizeof(VM));
   /* matching free at bottom of main() */
   Chunk * chunk = malloc_via_reallocate(sizeof(Chunk));
-  int run_result = common_vm_chunk_init_and_run(vm, chunk, TRUE);
+  int run_result = common_vm_chunk_init_and_run(vm, chunk, TRUE, FALSE);
   if(run_result){
     return EXIT_FAILURE;
   }

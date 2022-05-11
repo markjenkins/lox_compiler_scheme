@@ -129,7 +129,7 @@
 
 (define (stack_slot_var scope_state var_match)
   (let loop ( (loop_scope_state_locals (scope_state_locals scope_state))
-	      (loop_stack_position (- (scope_state_local_count scope_state) 1)))
+	      (loop_stack_position (scope_state_local_count scope_state)) )
     (cond ( (null? loop_scope_state_locals) LOCAL_NON_EXIST_DEPTH )
 	  ( (equal? var_match (scope_state_locals_top_name
 			       loop_scope_state_locals))
